@@ -1,0 +1,102 @@
+[
+  {
+    "name": "Walmart",
+    "url": "https://www.walmart.com",
+    "logo": "walmart.png"
+  },
+  {
+    "name": "Amazon",
+    "url": "https://www.amazon.com",
+    "logo": "amazon.png"
+  },
+  {
+    "name": "Costco Wholesale",
+    "url": "https://www.costco.com",
+    "logo": "costco.png"
+  },
+  {
+    "name": "The Home Depot",
+    "url": "https://www.homedepot.com",
+    "logo": "homedepot.png"
+  },
+  {
+    "name": "Target",
+    "url": "https://www.target.com",
+    "logo": "Target.png"
+  },
+  {
+    "name": "Kroger",
+    "url": "https://www.kroger.com",
+    "logo": "Kroger.png"
+  },
+  {
+    "name": "Walgreens",
+    "url": "https://www.walgreens.com",
+    "logo": "Walgreens.png"
+  },
+  {
+    "name": "CVS Health",
+    "url": "https://www.cvs.com",
+    "logo": "CVSHealth.png"
+  },
+  {
+    "name": "Lowe's",
+    "url": "https://www.lowes.com",
+    "logo": "Lowe.png"
+  },
+  {
+    "name": "Best Buy",
+    "url": "https://www.bestbuy.com",
+    "logo": "BestBuy.png"
+  },
+  {
+    "name": "Macy's",
+    "url": "https://www.macys.com",
+    "logo": "Macy.png"
+  },
+  {
+    "name": "TJX Companies",
+    "url": "https://www.tjx.com",
+    "logo": "TJXCompanies.png"
+  },
+  {
+    "name": "Dollar General",
+    "url": "https://www.dollargeneral.com",
+    "logo": "DollarGeneral.jpg"
+  },
+  {
+    "name": "Nordstrom",
+    "url": "https://www.nordstrom.com",
+    "logo": "Nordstrom.png"
+  },
+  {
+    "name": "Gap Inc.",
+    "url": "https://www.gap.com",
+    "logo": "Gap.png"
+  },
+  {
+    "name": "Bed Bath & Beyond",
+    "url": "https://www.bedbathandbeyond.com",
+    "logo": "BedBathBeyond.png"
+  },
+  {
+    "name": "Sears",
+    "url": "https://www.sears.com",
+    "logo": "Sears.png"
+  },
+  {
+    "name": "J.C. Penney",
+    "url": "https://www.jcpenney.com",
+    "logo": "JCPenney.png"
+  },
+  {
+    "name": "Aldi",
+    "url": "https://www.aldi.us",
+    "logo": "Aldi.png"
+  },
+  {
+    "name": "Trader Joe's",
+    "url": "https://www.traderjoes.com",
+    "logo": "TraderJoe.png"
+  }
+]

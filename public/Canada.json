@@ -1,0 +1,107 @@
+[
+  {
+    "name": "Canadian Tire",
+    "url": "https://www.canadiantire.ca",
+    "logo": "canadianTire.png"
+  },
+  {
+    "name": "Hudson's Bay",
+    "url": "https://www.thebay.com",
+    "logo": "Hudson_Bay.png"
+  },
+  {
+    "name": "Loblaws",
+    "url": "https://www.loblaws.ca",
+    "logo": "Loblaws.png"
+  },
+  {
+    "name": "Shoppers Drug Mart",
+    "url": "https://www.shoppersdrugmart.ca",
+    "logo": "ShoppersDrugMart.png"
+  },
+  {
+    "name": "Sobeys",
+    "url": "https://www.sobeys.com",
+    "logo": "Sobeys.jpg"
+  },
+  {
+    "name": "Metro",
+    "url": "https://www.metro.ca",
+    "logo": "metro.png"
+  },
+  {
+    "name": "Rona",
+    "url": "https://www.rona.ca",
+    "logo": "Rona.png"
+  },
+  {
+    "name": "The Home Depot Canada",
+    "url": "https://www.homedepot.ca",
+    "logo": "homedepot.png"
+  },
+  {
+    "name": "Walmart Canada",
+    "url": "https://www.walmart.ca",
+    "logo": "walmart.png"
+  },
+  {
+    "name": "Best Buy Canada",
+    "url": "https://www.bestbuy.ca",
+    "logo": "BestBuy.png"
+  },
+  {
+    "name": "Costco Canada",
+    "url": "https://www.costco.ca",
+    "logo": "costco.png"
+  },
+  {
+    "name": "Dollarama",
+    "url": "https://www.dollarama.com",
+    "logo": "Dollarama.png"
+  },
+  {
+    "name": "Giant Tiger",
+    "url": "https://www.gianttiger.com",
+    "logo": "GiantTiger.png"
+  },
+  {
+    "name": "Staples Canada",
+    "url": "https://www.staples.ca",
+    "logo": "StaplesCanada.png"
+  },
+  {
+    "name": "London Drugs",
+    "url": "https://www.londondrugs.com",
+    "logo": "LondonDrugs.png"
+  },
+  {
+    "name": "Sport Chek",
+    "url": "https://www.sportchek.ca",
+    "logo": "SportChek.png"
+  },
+  {
+    "name": "Mark's",
+    "url": "https://www.marks.com",
+    "logo": "Marks.png"
+  },
+  {
+    "name": "Indigo",
+    "url": "https://www.chapters.indigo.ca",
+    "logo": "Indigo.png"
+  },
+  {
+    "name": "Toys 'R' Us Canada",
+    "url": "https://www.toysrus.ca",
+    "logo": "ToysR.png"
+  },
+  {
+    "name": "Simons",
+    "url": "https://www.simons.ca",
+    "logo": "simons.png"
+  },
+  {
+    "name": "Rexall",
+    "url": "https://www.rexall.ca",
+    "logo": "Rexall.png"
+  }
+]

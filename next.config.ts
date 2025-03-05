@@ -1,39 +1,39 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "cdn.sanity.io",
-      },
-      {
-        protocol: "https",
-        hostname: "clerk.gservetech.com",
-      },
-      {
-        protocol: "https",
-        hostname: "m.media-amazon.com",
-      },
+    domains: [
+      "cdn.sanity.io",
+      "clerk.gservetech.com",
+      "m.media-amazon.com",
+      "i5.walmartimages.com",
+      "ae-pic-a1.aliexpress-media.com",
+      "multimedia.bbycastatic.ca",
     ],
   },
+
   async rewrites() {
     return [
       {
-        source: "/api/products/:path*", // Calls to /api/products will be proxied
-        destination: "http://165.227.42.159:8080/api/products/:path*",
+        source: "/api/products/:path*",
+        destination: "https://api.gservetech.com/api/products/:path*",
       },
+      {
+        source: "/api/orders/:path*",
+        destination: "https://api.gservetech.com/api/orders/:path*",
+      },
+      // Add more API proxies if needed
     ];
   },
+
   async headers() {
     return [
       {
-        source: "/api/:path*", // Apply CORS headers to API requests
+        source: "/api/:path*",
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "*", // Allows requests from any origin
+            value: "https://yourfrontend.com", // Replace with your frontend domain
           },
           {
             key: "Access-Control-Allow-Methods",

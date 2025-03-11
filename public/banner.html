@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Responsive Balanced Layout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      function changeImage(element) {
+        document.getElementById("mainImage").src = element.src;
+      }
+    </script>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center p-0">
+    <div class="container mx-auto w-full max-w-[1200px]">
+      <div
+        class="grid grid-rows-[auto_auto_12vh] grid-cols-[auto] md:grid-cols-[9%_auto_9%] h-[90vh] w-full"
+      >
+        <!-- Featured Product Thumbnails (Top Section) with Brick Background -->
+        <div
+          class="row-span-1 col-span-full flex flex-wrap items-center justify-center rounded-lg h-[18vh] w-full shadow-lg p-4 md:p-6 mx-auto overflow-hidden bg-[#dcdada] shadow-[0_0_20px_rgba(255,255,255,0.2)] mb-8"
+        >
+          <div
+            class="flex flex-wrap items-center justify-center w-full max-w-full h-full gap-3 md:gap-6"
+          >
+            <img
+              src="realestatebanner1.jpg"
+              onclick="changeImage(this)"
+              alt="Thumbnail 1"
+              class="w-[80px] md:w-[120px] h-[80px] md:h-[120px] object-cover border-2 border-gray-600 rounded-lg cursor-pointer"
+            />
+            <img
+              src="realestatebanner2.webp"
+              onclick="changeImage(this)"
+              alt="Thumbnail 2"
+              class="w-[80px] md:w-[120px] h-[80px] md:h-[120px] object-cover border-2 border-gray-600 rounded-lg cursor-pointer"
+            />
+            <img
+              src="realestatebanner3.avif"
+              onclick="changeImage(this)"
+              alt="Thumbnail 3"
+              class="w-[80px] md:w-[120px] h-[80px] md:h-[120px] object-cover border-2 border-gray-600 rounded-lg cursor-pointer"
+            />
+            <img
+              src="realestatebanner4.avif"
+              onclick="changeImage(this)"
+              alt="Thumbnail 4"
+              class="w-[80px] md:w-[120px] h-[80px] md:h-[120px] object-cover border-2 border-gray-600 rounded-lg cursor-pointer"
+            />
+          </div>
+        </div>
+
+        <!-- Left Section (Vertical Thumbnails with Brick Background) -->
+        <div
+          class="relative flex flex-col gap-3 justify-start w-full h-full bg-cover bg-center"
+          style="
+            background-image: url(&quot;background.jpg&quot;);
+            padding-top: 0;
+          "
+        >
+          <img
+            src="realestatebanner5.jpg"
+            onclick="changeImage(this)"
+            alt="Thumbnail 1"
+            class="w-[100px] h-[100px] object-cover border-2 border-black rounded-lg cursor-pointer"
+          />
+          <img
+            src="realestatebanner7.avif"
+            onclick="changeImage(this)"
+            alt="Thumbnail 2"
+            class="w-[100px] h-[100px] object-cover border-2 border-black rounded-lg cursor-pointer"
+          />
+          <img
+            src="realestatebanner8.avif"
+            onclick="changeImage(this)"
+            alt="Thumbnail 3"
+            class="w-[100px] h-[100px] object-cover border-2 border-black rounded-lg cursor-pointer"
+          />
+          <img
+            src="realestatebanner9.jpg"
+            onclick="changeImage(this)"
+            alt="Thumbnail 4"
+            class="w-[100px] h-[100px] object-cover border-2 border-black rounded-lg cursor-pointer"
+          />
+        </div>
+
+        <!-- Main Product Display -->
+
+        <div class="container mx-auto mt-5 mb-10 w-4/5 font-serif">
+          <!-- header title -->
+          <div
+            class="relative w-full max-w-3xl mx-auto text-center rounded-xl shadow-lg border-4 border-yellow-600 overflow-hidden h-28 md:h-32 flex items-center justify-center"
+          >
+            <!-- Background Image -->
+            <div
+              class="absolute inset-0 bg-cover bg-center opacity-70 h-full"
+              style="
+                background-image: url(&quot;https://source.unsplash.com/800x600/?woman,sales,marketing&quot;);
+              "
+            ></div>
+
+            <!-- Content Overlay -->
+            <div
+              class="relative bg-black bg-opacity-70 text-white w-full px-4 py-2 md:px-6 flex flex-col justify-center"
+            >
+              <!-- Single Compact Paragraph with 3 Columns -->
+              <div
+                class="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 text-xs md:text-sm font-semibold text-center"
+              >
+                <!-- Column 1: Heading -->
+                <div>
+                  <span
+                    class="text-lg md:text-xl font-extrabold text-yellow-300"
+                    >Promotional Roll-Up Banners</span
+                  >
+                </div>
+
+                <!-- Column 2: Prices (Each Item Stands Out) -->
+                <div
+                  class="bg-white text-gray-900 p-1 md:p-2 rounded-md shadow-md border border-yellow-600"
+                >
+                  <div>
+                    <span class="text-red-700">🔥 33" × 81"</span> →
+                    <span class="text-green-700 font-bold">$150</span>
+                  </div>
+                  <div>
+                    <span class="text-red-700">🖼️ 30" × 24"</span> →
+                    <span class="text-green-700 font-bold">$60</span>
+                  </div>
+                  <div>
+                    <span class="text-red-700">📏 8 ft × 2 ft</span> →
+                    <span class="text-green-700 font-bold">$80</span>
+                  </div>
+                </div>
+
+                <!-- Column 3: Contact Info -->
+                <div
+                  class="bg-white text-gray-900 p-1 md:p-2 rounded-md shadow-md"
+                >
+                  📞 <span class="font-bold">416-635-5207</span> <br />
+                  📧 <span class="font-bold">info@gservetech.com</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- end of header title -->
+          <div class="w-full">
+            <img
+              id="mainImage"
+              src="realestatebanner8.avif"
+              alt="Image Description"
+              class="w-full h-[600px] object-cover my-8"
+            />
+          </div>
+          <!-- promotional paragraph start -->
+          <div
+            class="columns-2 gap-10 border-l border-r border-gray-300 px-8 py-6"
+          >
+            <p class="mb-5 text-lg indent-8 text-justify leading-relaxed">
+              <span
+                class="float-left text-5xl leading-none font-bold text-[#2196F3] mr-2"
+                >P</span
+              >
+              Promote your business effortlessly with our **premium roll-up
+              banners**, designed to make a lasting impact at trade shows,
+              events, and retail spaces.
+              <strong class="uppercase text-[#F44336] tracking-wide"
+                >Stand out with high-definition graphics</strong
+              >, vibrant colors, and durable, tear-resistant materials. Whether
+              you're launching a new product, promoting a special offer, or
+              reinforcing your brand presence, our banners deliver
+              **professional quality with instant setup and portability**. Easy
+              to transport and set up in seconds, they are perfect for
+              businesses looking for **cost-effective, high-visibility marketing
+              solutions**. With **sharp printing, lightweight aluminum stands,
+              and a free carrying case**, your brand will always look its best,
+              wherever you go.
+              <em class="italic text-[#FF9800]"
+                >Order now and experience the power of eye-catching
+                advertising!</em
+              >
+            </p>
+
+            <p class="mb-5 text-lg indent-8 text-justify leading-relaxed">
+              Our roll-up banners are crafted with **top-tier materials** to
+              ensure **maximum durability and premium print quality**. Whether
+              displayed at **expos, conferences, storefronts, or corporate
+              events**, these banners provide **bold, eye-catching visuals that
+              demand attention**. **Effortless to set up** and **lightweight for
+              easy transport**, each banner includes a **sleek aluminum base and
+              a protective carrying case**—making it a perfect solution for
+              businesses on the move.
+              <span class="bg-[#4CAF50] text-white px-2 py-1 rounded"
+                >Designed for high impact</span
+              >, our banners are printed on **fade-resistant, tear-proof
+              vinyl**, ensuring your message remains sharp and vibrant in any
+              setting. Elevate your marketing game with a **cost-effective,
+              long-lasting advertising tool** that works for you **24/7**.
+            </p>
+
+            <p class="mb-5 text-lg indent-8 text-justify leading-relaxed">
+              **Make every impression count** with our high-impact roll-up
+              banners. Designed to **elevate your brand presence**, these
+              banners are perfect for **product launches, promotions, grand
+              openings, and business events**. Our **state-of-the-art printing
+              technology** ensures **crisp, high-resolution graphics** that
+              maintain their vibrancy over time. Whether you need a **bold,
+              full-color display or a sleek, minimalist design**, we deliver
+              **unmatched print quality** that stands out in any environment.
+              **Fully customizable** to match your brand identity, our banners
+              allow you to showcase your **logo, message, and visuals** in a way
+              that captures your audience’s attention instantly. **From small
+              businesses to large corporations, we help brands make an impact!**
+            </p>
+
+            <p class="mb-5 text-lg indent-8 text-justify leading-relaxed">
+              **Ready to take your brand to the next level?** Our roll-up
+              banners are the **perfect blend of affordability, convenience, and
+              professional quality**—helping businesses like yours **stand out
+              in a crowded marketplace**. Whether you're attending **trade
+              shows, showcasing products, or driving in-store traffic**, a
+              well-designed banner can **elevate your presence and attract more
+              customers** instantly. Don’t miss out on this opportunity to
+              enhance your **marketing strategy** with a **cost-effective,
+              high-impact solution**. **Order your custom roll-up banner today
+              and make a lasting impression!**
+            </p>
+          </div>
+        </div>
+        <!-- promotional paragraph end -->
+        <!-- Right Section (Vertical Thumbnails with Brick Background) -->
+        <div
+          class="relative flex flex-col gap-3 justify-start w-full h-full bg-cover bg-center"
+          style="
+            background-image: url(&quot;background.jpg&quot;);
+            padding-top: 0;
+          "
+        >
+          <div class="flex flex-col justify-start gap-3">
+            <img
+              src="realestatebanner10.jpg"
+              onclick="changeImage(this)"
+              alt="Thumbnail 1"
+              class="w-[100px] h-[100px] object-cover border-2 border-black rounded-lg cursor-pointer"
+            />
+            <img
+              src="realestatebanner11.jpg"
+              onclick="changeImage(this)"
+              alt="Thumbnail 2"
+              class="w-[100px] h-[100px] object-cover border-2 border-black rounded-lg cursor-pointer"
+            />
+            <img
+              src="realestatebanner12.jpg"
+              onclick="changeImage(this)"
+              alt="Thumbnail 3"
+              class="w-[100px] h-[100px] object-cover border-2 border-black rounded-lg cursor-pointer"
+            />
+            <img
+              src="realestatebanner13.jpg"
+              onclick="changeImage(this)"
+              alt="Thumbnail 4"
+              class="w-[100px] h-[100px] object-cover border-2 border-black rounded-lg cursor-pointer"
+            />
+          </div>
+        </div>
+
+        <!-- Additional Information (Fixed at Bottom) with Brick Background -->
+        <div
+          class="row-span-1 col-span-full rounded-lg flex flex-col items-center justify-center shadow-md h-[12vh] w-full bg-white p-2 text-center"
+        >
+          <p class="text-sm text-red-900 font-medium">
+            **Explore our collection for more exciting offers and promotions!**
+          </p>
+
+          <p class="text-xs text-gray-800 font-semibold mt-1">
+            📞 <span class="text-[#E53935] font-bold">416-635-5207</span> | 📧
+            <span class="text-[#E53935] font-bold">info@gservetech.com</span>
+          </p>
+
+          <p class="text-xs text-blue-700 font-semibold">
+            🌐
+            <a href="https://www.gservetech.com" class="underline"
+              >www.gservetech.com</a
+            >
+            | 🎯
+            <a
+              href="https://www.gservetech.com/banner.html"
+              class="text-green-700 underline"
+              >Order Now</a
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

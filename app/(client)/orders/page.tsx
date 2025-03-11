@@ -1,10 +1,9 @@
 import Container from "@/components/Container";
-import OrdersComponent from "@/components/OrdersComponent";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { getMyOrders } from "@/sanity/helpers";
+import { Order } from "@/types/order.types";
 import { auth } from "@clerk/nextjs/server";
 import { FileX } from "lucide-react";
 import Link from "next/link";
@@ -17,7 +16,7 @@ const OrdersPage = async () => {
     return redirect("/");
   }
 
-  const orders = await getMyOrders(userId);
+  const orders: Order[] = [];
 
   return (
     <div>
@@ -46,7 +45,7 @@ const OrdersPage = async () => {
                       <TableHead>Status</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <OrdersComponent orders={orders} />
+                  {/* <OrdersComponent orders={orders} /> */}
                 </Table>
                 <ScrollBar orientation="horizontal" />
               </ScrollArea>

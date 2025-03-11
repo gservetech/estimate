@@ -1,13 +1,6 @@
 import Container from "@/components/Container";
 import ProductGrid from "@/components/ProductGrid";
-import { searchProductsByName } from "@/sanity/helpers/apicalls";
-
-
-// interface Props {
-//   searchParams: {
-//     query: string;
-//   };
-// }
+import { Product } from "@/types/product.types";
 
 const SearchPage = async ({
   searchParams,
@@ -15,9 +8,25 @@ const SearchPage = async ({
   searchParams: Promise<{ query: string }>;
 }) => {
   const { query } = await searchParams;
-  const products = await searchProductsByName(query);
+  const products: Product[] = {
+    // @ts-expect-error - todo
+    id: 1,
+    name: "Product Name",
+    images: [],
+    description: ["Product Description"],
+    price: 100,
+    discount: 10,
+    category_id: 1,
+    stock: 10,
+    weight: 1,
+    height: 1,
+    width: 1,
+    label: "Product Label",
+    status_id: 1,
+    created_at: new Date(),
+  };
 
-  if (!products?.length) {
+  if (!products) {
     return (
       <div className="flex flex-col items-center justify-normal min-h-screen bg-gray-100 p-4">
         <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl text-center">

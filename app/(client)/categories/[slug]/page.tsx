@@ -1,6 +1,7 @@
 import Container from "@/components/Container";
 import ProductList from "@/components/ProductList";
-import { getAllCategories, getProductsByCategory } from "@/sanity/helpers/apicalls";
+import { Category } from "@/types/Category.types";
+import { Product } from "@/types/product.types";
 
 import React from "react";
 interface Props {
@@ -9,8 +10,8 @@ interface Props {
 
 const CategoriesPage = async ({ params }: Props) => {
   const { slug } = await params;
-  const products = await getProductsByCategory(slug);
-  const categories = await getAllCategories();
+  const products: Product[] = [];
+  const categories: Category[] = [];
   return (
     <div className="flex flex-col items-center justify-top  bg-gray-100">
       <Container className="p-8 bg-white rounded-lg shadow-md mt-3">

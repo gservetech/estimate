@@ -1,25 +1,23 @@
 "use client";
+import {
+  createCheckoutSession,
+  Metadata,
+} from "@/actions/createCheckoutSession";
 import Container from "@/components/Container";
+import EmptyCart from "@/components/EmptyCart";
+import Loader from "@/components/Loader";
+import NoAccessToCart from "@/components/NoAccessToCart";
 import PriceFormatter from "@/components/PriceFormatter";
 import QuantityButtons from "@/components/QuantityButtons";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { urlFor } from "@/sanity/lib/image";
 import useCartStore from "@/store";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { ShoppingBag, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import EmptyCart from "@/components/EmptyCart";
-import NoAccessToCart from "@/components/NoAccessToCart";
-import Loader from "@/components/Loader";
-import {
-  createCheckoutSession,
-  Metadata,
-} from "@/actions/createCheckoutSession";
-import { log } from "console";
 
 const CartPage = () => {
   const {
@@ -71,8 +69,8 @@ const CartPage = () => {
     }
   };
 
-  const handleDeleteProduct = (id: number | string ) => {
-    deleteCartProduct(typeof id === "number" ? id : parseInt(id, 10)); 
+  const handleDeleteProduct = (id: number | string) => {
+    deleteCartProduct(typeof id === "number" ? id : parseInt(id, 10));
     toast.success("Product deleted successfully!");
   };
   return (

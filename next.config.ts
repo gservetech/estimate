@@ -3,7 +3,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   images: {
     domains: [
-      "cdn.sanity.io",
       "clerk.gservetech.com",
       "m.media-amazon.com",
       "i5.walmartimages.com",

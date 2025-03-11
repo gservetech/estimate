@@ -1,9 +1,7 @@
 import AddToCartButton from "@/components/AddToCartButton";
 import Container from "@/components/Container";
 import PriceView from "@/components/PriceView";
-import { getProductBySlug } from "@/sanity/helpers/apicalls";
-
-import { urlFor } from "@/sanity/lib/image";
+import { Product } from "@/types/product.types";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import React from "react";
@@ -13,16 +11,30 @@ import { LuStar } from "react-icons/lu";
 import { RxBorderSplit } from "react-icons/rx";
 import { TbTruckDelivery } from "react-icons/tb";
 
-// export const dynamic = "force-static";
-// export const revalidate = 60;
-
 const ProductPage = async ({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  console.log(slug);
+
+  const product: Product = {
+    id: 1,
+    name: "Product Name",
+    images: [],
+    description: ["Product Description"],
+    price: 100,
+    discount: 10,
+    category_id: 1,
+    stock: 10,
+    weight: 1,
+    height: 1,
+    width: 1,
+    label: "Product Label",
+    status_id: 1,
+    created_at: new Date(),
+  };
 
   if (!product) {
     return notFound();
@@ -31,10 +43,10 @@ const ProductPage = async ({
   return (
     <div>
       <Container className="flex flex-col md:flex-row gap-10 py-10">
-        {product?.image && (
+        {product?.images && (
           <div className="w-full md:w-1/2 h-auto border border-darkBlue/20 shadow-md rounded-md group overflow-hidden">
             <Image
-              src={urlFor(product?.image).url()}
+              src={product?.images[0]}
               alt="productImage"
               width={700}
               height={700}
@@ -54,7 +66,9 @@ const ProductPage = async ({
                     <LuStar
                       fill={!isLastStar ? "#fca99b" : "transparent"}
                       key={index}
-                      className={`${isLastStar ? "text-gray-500" : "text-lightOrange"}`}
+                      className={`${
+                        isLastStar ? "text-gray-500" : "text-lightOrange"
+                      }`}
                     />
                   );
                 })}

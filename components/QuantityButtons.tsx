@@ -3,7 +3,6 @@ import { Button } from "./ui/button";
 import { HiMinus, HiPlus } from "react-icons/hi2";
 import toast from "react-hot-toast";
 import useCartStore from "@/store";
-// import { Product } from "@/sanity.types";
 import { twMerge } from "tailwind-merge";
 import { Product } from "@/types/product.types";
 

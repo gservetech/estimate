@@ -1,17 +1,12 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "../globals.css";
 import "../style.css";
-import { ClerkProvider } from "@clerk/nextjs";
 
 import Footer from "@/components/Footer";
-import { SanityLive } from "@/sanity/lib/live";
-import { Toaster } from "react-hot-toast";
-import { VisualEditing } from "next-sanity";
-import { draftMode } from "next/headers";
-import DisableDraftMode from "@/components/DisableDraftMode";
 import Header from "@/components/Header";
-// import Header from "@/layout/Header";
+import { Toaster } from "react-hot-toast";
 import { getUserOrders } from "@/lib/getUserOrders";
 
 const poppins = localFont({
@@ -36,23 +31,13 @@ export default async function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <head>
-          
-        </head>
+        <head></head>
         <body className={`${poppins.variable} antialiased`}>
-          {(await draftMode()).isEnabled && (
-            <>
-              <DisableDraftMode />
-              <VisualEditing />
-            </>
-          )}
-           <Header user={JSON.parse(JSON.stringify(user))} orders={orders} />
-
-
+          <Header user={JSON.parse(JSON.stringify(user))} orders={orders} />
 
           {children}
           <Footer />
-          
+
           <Toaster
             position="bottom-right"
             toastOptions={{
@@ -62,7 +47,6 @@ export default async function RootLayout({
               },
             }}
           />
-           
         </body>
       </html>
     </ClerkProvider>

@@ -3,7 +3,12 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { ClerkLoaded, SignedIn, SignInButton, UserButton } from "@clerk/nextjs";
+import {
+  ClerkLoaded,
+  SignedIn,
+  SignInButton,
+  UserButton,
+} from "@clerk/nextjs";
 import logo from "@/images/logo.png";
 import CartIcon from "./CartIcon";
 import { BsBasket } from "react-icons/bs";
@@ -13,7 +18,6 @@ import { IoMdClose } from "react-icons/io";
 import axios from "axios";
 import { Order } from "@/types/order.types";
 import { User } from "@/types/user.types";
-import FinancialSitesGrid from "@/components/FinancialSitesGrid";
 
 interface HeaderProps {
   user: User | null;
@@ -26,46 +30,50 @@ const Header: React.FC<HeaderProps> = ({ user, orders }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchLocation = async () => {
+    const fetchAndStoreVisit = async () => {
       try {
-        const response = await axios.get("https://ipinfo.io/json");
-        setCountry(response.data?.country ?? "CA");
+        const ipInfoToken = process.env.NEXT_PUBLIC_IPINFO_API_TOKEN; // Read from env variables
+
+        if (!ipInfoToken) {
+          console.error("IPINFO_API_TOKEN is not set in environment variables.");
+          return;
+        }
+
+        // Fetch visitor details from ipinfo.io
+        const response = await axios.get(`https://ipinfo.io/json?token=${ipInfoToken}`);
+        const visitData = {
+          ip: response.data?.ip ?? "",
+          visitData: JSON.stringify(response.data), // Store full JSON response
+        };
+
+        // Save visit data to backend
+        await axios.post("/api/visits", visitData);
+        setCountry(response.data?.country ?? "CA"); // Set country from response
       } catch (error) {
-        console.error("Error fetching location:", error);
+        console.error("Error fetching or saving visit data:", error);
       }
     };
 
-    fetchLocation();
-  }, []); // Empty dependency array prevents infinite re-fetching
+    fetchAndStoreVisit();
+  }, []);
 
   return (
     <>
       {/* 🔹 Top Bar */}
       <div className="full bg-blue-900 text-white font-bold border-b border-gray-200 py-2">
         <div className="flex justify-end items-center px-4 space-x-3">
-          <Link
-            className="text-sm border-r border-[#ffffff46] px-3"
-            href="/about-us"
-          >
+          <Link className="text-sm border-r border-[#ffffff46] px-3" href="/about-us">
             About Us
           </Link>
           <div className="flex items-center gap-1 border-r border-[#ffffff46] px-3">
-            <img
-              className="w-6 h-4"
-              src={country === "CA" ? "/cf.png" : "/us.png"}
-              alt=""
-            />
+            <img className="w-6 h-4" src={country === "CA" ? "/cf.png" : "/us.png"} alt="" />
             <select
               value={country}
               onChange={(e) => setCountry(e.target.value)}
               className="border-none bg-transparent text-sm text-white font-bold"
             >
-              <option value="CA" className="text-black">
-                Canada
-              </option>
-              <option value="US" className="text-black">
-                USA
-              </option>
+              <option value="CA" className="text-black">Canada</option>
+              <option value="US" className="text-black">USA</option>
             </select>
           </div>
           <div className="flex items-center gap-1 px-3">
@@ -75,12 +83,8 @@ const Header: React.FC<HeaderProps> = ({ user, orders }) => {
               onChange={(e) => setCurrency(e.target.value)}
               className="border-none bg-transparent text-sm text-white font-bold"
             >
-              <option value="CAD" className="text-black">
-                CAD
-              </option>
-              <option value="USD" className="text-black">
-                USD
-              </option>
+              <option value="CAD" className="text-black">CAD</option>
+              <option value="USD" className="text-black">USD</option>
             </select>
           </div>
         </div>
@@ -92,26 +96,14 @@ const Header: React.FC<HeaderProps> = ({ user, orders }) => {
           {/* 🔹 Logo */}
           <div className="flex-shrink-0 ml-0 mr-4">
             <Link href="/">
-              <Image
-                src={logo}
-                alt="logo"
-                width={40}
-                height={40}
-                priority
-                className="object-contain h-[30px] lg:h-[70px] w-auto"
-              />
+              <Image src={logo} alt="logo" width={40} height={40} priority className="object-contain h-[30px] lg:h-[70px] w-auto" />
             </Link>
           </div>
 
           {/* 🔹 Search Bar */}
           <div className="hidden lg:flex flex-grow max-w-2xl mx-auto">
             <form action="/search" className="w-full">
-              <input
-                type="text"
-                name="query"
-                placeholder="Search for products"
-                className="bg-gray-50 text-gray-800 px-3 py-2 border border-gray-200 w-full rounded-md hoverEffect"
-              />
+              <input type="text" name="query" placeholder="Search for products" className="bg-gray-50 text-gray-800 px-3 py-2 border border-gray-200 w-full rounded-md hoverEffect" />
             </form>
           </div>
 
@@ -120,15 +112,9 @@ const Header: React.FC<HeaderProps> = ({ user, orders }) => {
             {/* 🔹 Mobile Menu Toggle */}
             <div className="lg:hidden">
               {isMobileMenuOpen ? (
-                <IoMdClose
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-6 h-6 text-black cursor-pointer"
-                />
+                <IoMdClose onClick={() => setIsMobileMenuOpen(false)} className="w-6 h-6 text-black cursor-pointer" />
               ) : (
-                <FaBars
-                  onClick={() => setIsMobileMenuOpen(true)}
-                  className="w-5 h-5 text-black cursor-pointer"
-                />
+                <FaBars onClick={() => setIsMobileMenuOpen(true)} className="w-5 h-5 text-black cursor-pointer" />
               )}
             </div>
 
@@ -143,9 +129,7 @@ const Header: React.FC<HeaderProps> = ({ user, orders }) => {
               {user ? (
                 <div className="flex items-center gap-2">
                   <UserButton />
-                  <p className="hidden lg:block text-sm font-bold">
-                    {user.firstName ?? "User"}
-                  </p>
+                  <p className="hidden lg:block text-sm font-bold">{user.firstName ?? "User"}</p>
                 </div>
               ) : (
                 <SignInButton mode="modal">
@@ -163,56 +147,14 @@ const Header: React.FC<HeaderProps> = ({ user, orders }) => {
 
             {/* 🔹 Orders */}
             <SignedIn>
-              <Link
-                href="/orders"
-                className="flex items-center text-xs gap-2 px-2 py-1 rounded-md"
-              >
+              <Link href="/orders" className="flex items-center text-xs gap-2 px-2 py-1 rounded-md">
                 <BsBasket className="text-xl text-darkBlue" />
-                <p className="hidden lg:block text-sm font-semibold">
-                  {orders.length ?? 0} items
-                </p>
+                <p className="hidden lg:block text-sm font-semibold">{orders.length ?? 0} items</p>
               </Link>
             </SignedIn>
           </div>
         </div>
       </header>
-      
-
-      {/* 🔹 Categories Section */}
-      <div className="pt-[60px] lg:pt-[69px]">
-        <div
-          className={`bg-gray-100 ${isMobileMenuOpen ? "block" : "hidden lg:block"}`}
-        >
-          <div className="container mx-auto flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2">
-            {[
-              "Grocery Stores",
-              "Clothing Stores",
-              "Electronics Stores",
-              "Home Improvement Stores",
-              "Pharmacies",
-              "Department Stores",
-              "Specialty Stores",
-              "Furniture Stores",
-              "Sporting Goods Stores",
-              "Discount Stores",
-              "Automotive Stores",
-              "Bookstores",
-              "Toy Stores",
-              "Jewelry Stores",
-              "Office Supply Stores",
-              "Pet Stores",
-              "Beauty Stores",
-              "Gourmet Food Stores",
-              "Convenience Stores",
-              "Thrift Stores",
-            ].map((category) => (
-              <div key={category} className="category">
-                <div className="text">{category}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
     </>
   );
 };

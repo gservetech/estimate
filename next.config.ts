@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
       "i5.walmartimages.com",
       "ae-pic-a1.aliexpress-media.com",
       "multimedia.bbycastatic.ca",
+      "bbycastatic.ca",
     ],
   },
 
@@ -21,7 +22,14 @@ const nextConfig: NextConfig = {
         source: "/api/orders/:path*",
         destination: "https://api.gservetech.com/api/orders/:path*",
       },
-      // Add more API proxies if needed
+      {
+        source: "/api/users/:path*",
+        destination: "https://api.gservetech.com/api/users/:path*",
+      },
+      {
+        source: "/api/shipping/:path*",
+        destination: "https://api.gservetech.com/api/shipping/:path*",
+      },
     ];
   },
 
@@ -32,7 +40,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "https://yourfrontend.com", // Replace with your frontend domain
+            value: "https://yourfrontend.com",
           },
           {
             key: "Access-Control-Allow-Methods",

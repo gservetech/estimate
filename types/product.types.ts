@@ -9,14 +9,15 @@ export interface Product {
   discount?: number;
   category_id: number;
   stock?: number;
-  weight?: number;
-  height?: number;
-  width?: number;
+  weight: number | null | undefined;
+  height?: number | null;
+  width?: number | null;
   label?: string;
-  status_id: number;
-  affiliate_provider?: AffiliateProvider | null; // Changed from `affiliate_provider_id`
-  created_at?: Date;
-  updated_at?: Date;
+  status_id?: number; // Made optional
+  status?: { id: number; name: string }; // Added status object
+  affiliate_provider?: AffiliateProvider | null;
+  created_at?: string;
+  updated_at?: string;
   product_url?: string;
   shippingTime?: string;
 }

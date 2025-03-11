@@ -1,40 +1,37 @@
 import AddToCartButton from "@/components/AddToCartButton";
 import Container from "@/components/Container";
 import PriceView from "@/components/PriceView";
-import { Product } from "@/types/product.types";
-import Image from "next/image";
+
 import { notFound } from "next/navigation";
-import React from "react";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { FiShare2 } from "react-icons/fi";
 import { LuStar } from "react-icons/lu";
 import { RxBorderSplit } from "react-icons/rx";
 import { TbTruckDelivery } from "react-icons/tb";
+import ProductImageCard from "@/components/ProductImageCard";
+import { Product } from "@/types/product.types";
+import productData from "@/data/products-data.json";
 
-const ProductPage = async ({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) => {
-  const { slug } = await params;
-  console.log(slug);
+const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params;
 
-  const product: Product = {
-    id: 1,
-    name: "Product Name",
-    images: [],
-    description: ["Product Description"],
-    price: 100,
-    discount: 10,
-    category_id: 1,
-    stock: 10,
-    weight: 1,
-    height: 1,
-    width: 1,
-    label: "Product Label",
-    status_id: 1,
-    created_at: new Date(),
-  };
+  // Find product from local JSON data
+  const product = productData.find(
+    (item) => item.id === parseInt(id, 10)
+  ) as Product;
+
+  // Comment out the original API fetch
+  // const fetchData = async () => {
+  //   const response = await fetch(
+  //     `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/pro/${id}`
+  //   );
+  //   if (!response.ok) throw new Error("Item not found");
+  //   return await response.json();
+  // };
+
+  // const product = (await fetchData().catch(() => {
+  //   return null;
+  // })) as Product;
 
   if (!product) {
     return notFound();
@@ -43,18 +40,7 @@ const ProductPage = async ({
   return (
     <div>
       <Container className="flex flex-col md:flex-row gap-10 py-10">
-        {product?.images && (
-          <div className="w-full md:w-1/2 h-auto border border-darkBlue/20 shadow-md rounded-md group overflow-hidden">
-            <Image
-              src={product?.images[0]}
-              alt="productImage"
-              width={700}
-              height={700}
-              priority
-              className="w-full max-h-[550px] object-cover group-hover:scale-110 hoverEffect rounded-md"
-            />
-          </div>
-        )}
+        {product?.images && <ProductImageCard images={product.images} />}
         <div className="w-full md:w-1/2 flex flex-col gap-5">
           <div>
             <p className="text-4xl font-bold mb-2">{product?.name}</p>
@@ -96,7 +82,11 @@ const ProductPage = async ({
           </p>
 
           <p className="text-sm text-gray-600 tracking-wide">
-            {product?.description}
+            {product?.description?.map((item, index) => (
+              <div key={index}>
+                <p>{item}</p>
+              </div>
+            ))}
           </p>
           <AddToCartButton product={product} />
           <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-b-gray-200 py-5 -mt-2">

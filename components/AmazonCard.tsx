@@ -22,14 +22,10 @@ const AmazonCard: React.FC<AmazonCardProps> = ({ product }) => {
               width={500}
               height={500}
               loading="lazy"
-              className="w-full max-h-96 object-cover transition-transform duration-500 group-hover:scale-105"
+              className="w-full h-auto max-h-96 object-cover transition-transform duration-500 group-hover:scale-105"
             />
           </Link>
-        ) : (
-          <div className="bg-gray-200 flex items-center justify-center h-96">
-            <p className="text-gray-500">Image Unavailable</p>
-          </div>
-        )}
+        ) : null}
 
         {/* Discount Badge */}
         {(product.discount ?? 0) > 0 && (
@@ -48,9 +44,7 @@ const AmazonCard: React.FC<AmazonCardProps> = ({ product }) => {
 
         {/* Discount Info */}
         {(product.discount ?? 0) > 0 && (
-          <p className="text-xs text-gray-500 font-light">
-            {product.discount}
-          </p>
+          <p className="text-xs text-gray-500 font-light">{product.discount}</p>
         )}
 
         {/* Star Rating */}
@@ -63,21 +57,25 @@ const AmazonCard: React.FC<AmazonCardProps> = ({ product }) => {
                   ? "#fca99b"
                   : "transparent"
               }
-              className={`${index < Math.round((product.discount ?? 0)/ 20) ? "text-lightOrange" : "text-gray-500"}`}
+              className={`${
+                index < Math.round((product.discount ?? 0) / 20)
+                  ? "text-lightOrange"
+                  : "text-gray-500"
+              }`}
             />
           ))}
         </div>
 
         {/* Description */}
         <p className="text-sm text-gray-600 line-clamp-2">
-        {product.description?.[0] ?? "No description available"}
+          {product.description?.[0] ?? "No description available"}
         </p>
 
         <Link
           href={product.product_url || ""}
           className="bg-red-500 text-white font-bold text-lg py-3 px-6 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 mt-4"
         >
-          {(product.discount ?? 0)} ON Amazon
+          {product.discount ?? 0} ON Amazon
         </Link>
       </div>
     </div>

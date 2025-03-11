@@ -6,8 +6,8 @@ import "../style.css";
 
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { Toaster } from "react-hot-toast";
 import { getUserOrders } from "@/lib/getUserOrders";
+import { Toaster } from "react-hot-toast";
 
 const poppins = localFont({
   src: "../fonts/Poppins.woff2",
@@ -26,7 +26,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { user, orders } = await getUserOrders(); // Fetch on the server
+  const { user, orders } = await getUserOrders();
+  console.log(user);
 
   return (
     <ClerkProvider>

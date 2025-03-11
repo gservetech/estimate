@@ -3,19 +3,20 @@ import ProductCard from "./ProductCard";
 import { Product } from "@/types/product.types";
 import CanadaEcommerceLink from "@/components/CanadaEcommerceLink";
 import USEcommerceLink from "@/components/USEcommerceLink";
+import OtherBrandsProducts from "@/components/OtherBrandsProducts";
 
 interface ProductsProps {
   products: Product[];
   productsNotOurs?: Product[]; // Optional, since some calls might not include it
   own: boolean;
-  country: "US" | "Canada"; // ✅ Added this to match the page.tsx call
+  country: "US" | "CA"; // Updated to match locationStore type
 }
 
 const Products: React.FC<ProductsProps> = ({
   products,
   productsNotOurs = [],
   own,
-  country,
+  // country,
 }) => {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-10 items-start">
@@ -52,22 +53,10 @@ const Products: React.FC<ProductsProps> = ({
           ))}
         </div>
 
-        {/* Other Brands Products Section */}
-        {productsNotOurs.length > 0 && (
-          <div className="col-span-full text-center py-10">
-            <h1 className="text-3xl text-center uppercase w-full font-bold">
-              Other <span className="text-lightBlue font-bold">Brands</span>{" "}
-              Products
-            </h1>
-          </div>
-        )}
-
-        {/* Product Grid for Other Brands */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
-          {productsNotOurs.map((item, index) => (
-            <ProductCard key={`other-${index}`} product={item} own={false} />
-          ))}
-        </div>
+        {/* Another Brands Products Section:
+                    Extracted into its own component to ensure the parent component remains a server component
+                */}
+        <OtherBrandsProducts productsNotOurs={productsNotOurs} />
       </div>
 
       {/* Right Sidebar - US Ecommerce Links */}

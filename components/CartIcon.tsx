@@ -6,7 +6,8 @@ import { MdOutlineShoppingCart } from "react-icons/md";
 
 const CartIcon = () => {
   const [isClient, setIsClient] = useState(false);
-  const groupedItems = useCartStore((state) => state.getGroupedItems());
+  const totalPrice = useCartStore((state) => state.getTotalPrice());
+
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -20,15 +21,8 @@ const CartIcon = () => {
     >
       <MdOutlineShoppingCart className="w-7 h-7 text-darkBlue" />
       <div className="flex flex-col">
-      <p className="font-semibold text-sm">CART</p>
-        <p >
-          {/* <span className="font-semibold">
-            {groupedItems?.length ? groupedItems.length : 0}
-          </span>
-          items */}
-          $199.08
-        </p>
-   
+        <p className="font-semibold text-sm">CART</p>
+        <p>${parseFloat(totalPrice.toFixed(2)) || 0}</p>
       </div>
     </Link>
   );

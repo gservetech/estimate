@@ -2,9 +2,9 @@
 import { createUser } from "@/actions/createUser";
 import AffiliateBanner from "@/components/AffliateBanner";
 import Products from "@/components/Products";
-import productData from "@/data/products-data.json";
 import useLocationStore from "@/store/locationStore";
 import { Product } from "@/types/product.types";
+import { fetchProducts } from "@/utils/productUtils";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
@@ -14,30 +14,15 @@ export default function Home() {
   const { country } = useLocationStore();
   const { user, isLoaded } = useUser();
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch("/api/products");
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch sales data");
-  //       }
-  //       const productData: Product[] = await response.json();
-  //       const filterData = productData.filter(
-  //         (item) => item.affiliate_provider?.name === "GServeTech"
-  //       );
-  //       const filterDataNotOurs = productData.filter(
-  //         (item) => item.affiliate_provider?.name !== "GServeTech"
-  //       );
+  useEffect(() => {
+    const loadProducts = async () => {
+      const { ourProducts, otherProducts } = await fetchProducts();
+      setProducts(ourProducts);
+      setProductsNotOurs(otherProducts);
+    };
 
-  //       setProductsNotOurs(filterDataNotOurs);
-  //       setProducts(filterData);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
+    loadProducts();
+  }, []);
 
   useEffect(() => {
     const handleUserCreation = async () => {
@@ -114,18 +99,6 @@ export default function Home() {
 
     handleUserCreation();
   }, [user, isLoaded]);
-
-  useEffect(() => {
-    const filterData = productData.filter(
-      (item) => item.affiliate_provider?.name === "GServeTech"
-    );
-    const filterDataNotOurs = productData.filter(
-      (item) => item.affiliate_provider?.name !== "GServeTech"
-    );
-
-    setProductsNotOurs(filterDataNotOurs);
-    setProducts(filterData);
-  }, []);
 
   return (
     <div className="pb-10 container mx-auto w-full">

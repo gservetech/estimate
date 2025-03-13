@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
       "clerk.gservetech.com",
       "m.media-amazon.com",
       "i5.walmartimages.com",
+      "i5.walmartimages.ca",
       "ae-pic-a1.aliexpress-media.com",
       "multimedia.bbycastatic.ca",
       "bbycastatic.ca",

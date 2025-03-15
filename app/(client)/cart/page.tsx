@@ -114,6 +114,17 @@ const CartPage = () => {
 
     if (!destination.postalCode) {
       setError("Please enter a destination postal code.");
+      setLoading(false);
+      return;
+    }
+
+    // Validate postal code format
+    const postalCode = destination.postalCode.toUpperCase().replace(/\s/g, "");
+    const canadianPostalCodeRegex = /^[A-Z]\d[A-Z]\d[A-Z]\d$/;
+
+    if (country === "CA" && !canadianPostalCodeRegex.test(postalCode)) {
+      setError("Please enter a valid Canadian postal code (e.g., A1B2C3).");
+      setLoading(false);
       return;
     }
 
@@ -136,35 +147,44 @@ const CartPage = () => {
           body: JSON.stringify({
             origin: staticOrigin,
             destination: {
-              postalCode: destination.postalCode
-                .toUpperCase()
-                .replace(/\s/g, ""),
+              postalCode: postalCode,
             },
             products: newArray,
           }),
         }
       );
 
-      console.log({
-        origin: staticOrigin,
-        destination: {
-          postalCode: destination.postalCode.toUpperCase().replace(/\s/g, ""),
-        },
-        products: newArray,
-      });
-
       const response = await res.json();
 
-      if (response) {
-        setShippingCostList([...response.options]);
-        setSelectedShippingCharge(response.options[0].price);
-        setSelectedService(
-          response.options[0].price + useCartStore?.getState().getTotalPrice()
-        );
-        setShowShipping(3);
+      // Check if the response contains an error
+      if (!res.ok || response.error) {
+        const errorMessage =
+          response.error || "Failed to calculate shipping cost.";
+        console.error("Shipping API error:", errorMessage);
+        setError(errorMessage);
+        setLoading(false);
+        return;
       }
+
+      // Check if options exist and are not empty
+      if (
+        !response.options ||
+        !Array.isArray(response.options) ||
+        response.options.length === 0
+      ) {
+        setError("No shipping options available for this destination.");
+        setLoading(false);
+        return;
+      }
+
+      setShippingCostList([...response.options]);
+      setSelectedShippingCharge(response.options[0].price);
+      setSelectedService(
+        response.options[0].price + useCartStore?.getState().getTotalPrice()
+      );
+      setShowShipping(3);
     } catch (err) {
-      console.log(err);
+      console.error("Error calculating shipping:", err);
       setError("Failed to calculate shipping cost. Please try again.");
     } finally {
       setLoading(false);
@@ -366,20 +386,24 @@ const CartPage = () => {
 
                           <Separator />
 
+                          {error && (
+                            <div
+                              className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
+                              role="alert"
+                            >
+                              <strong className="font-bold">Error: </strong>
+                              <span className="block sm:inline">{error}</span>
+                            </div>
+                          )}
+
                           <Button
                             type="submit"
-                            // onClick={() => }
                             disabled={loading}
                             className="w-full"
                             size="lg"
                           >
                             {loading ? "Processing..." : "Next"}
                           </Button>
-                          {error && (
-                            <p className=" py-2" style={{ color: "red" }}>
-                              {error}
-                            </p>
-                          )}
                           <div className="flex items-center justify-between">
                             <Button
                               onClick={() => setShowShipping(1)}
@@ -431,8 +455,8 @@ const CartPage = () => {
                                     {item?.service} -{" "}
                                     <PriceFormatter
                                       amount={
-                                        item?.price +
-                                        useCartStore?.getState().getTotalPrice()
+                                        item?.price
+                                        // useCartStore?.getState().getTotalPrice()
                                       }
                                       className="text-lg font-bold text-black"
                                     />

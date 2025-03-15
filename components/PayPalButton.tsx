@@ -18,7 +18,7 @@ export function PayPalButton({ amount }: PayPalButtonProps) {
   const [message, setMessage] = useState<string>("");
   const router = useRouter();
   const { userId } = useAuth();
-  const { setOrders } = useOrderStore();
+  const { setOrders, setUserId } = useOrderStore();
   const { resetCart } = useCartStore();
 
   const createOrder = async (): Promise<string> => {
@@ -73,23 +73,52 @@ export function PayPalButton({ amount }: PayPalButtonProps) {
         // After successful payment, fetch the updated orders list
         if (userId) {
           try {
+            // Set the user ID in the order store
+            setUserId(userId);
+
+            // Fetch the latest orders
             const { orders, error } = await getClientOrders(userId);
             if (!error && orders.length > 0) {
+              console.log(
+                "Successfully fetched updated orders:",
+                orders.length
+              );
+
               // Update the orders in the store
               setOrders(orders);
+
+              // Force a re-render of components that use the order store
+              // by adding a small delay before navigating
+              setTimeout(() => {
+                // Reset the cart after successful order
+                resetCart();
+
+                // Navigate to success page
+                router.push(`/success?orderId=${data.orderID}`);
+                toast.success("Payment successful");
+              }, 100);
             } else if (error) {
               console.error("Error fetching updated orders:", error);
+
+              // Even if there's an error fetching orders, still navigate to success
+              resetCart();
+              router.push(`/success?orderId=${data.orderID}`);
+              toast.success("Payment successful");
             }
           } catch (error) {
             console.error("Error fetching updated orders:", error);
+
+            // Even if there's an error, still navigate to success
+            resetCart();
+            router.push(`/success?orderId=${data.orderID}`);
+            toast.success("Payment successful");
           }
+        } else {
+          // If no userId, just navigate to success
+          resetCart();
+          router.push(`/success?orderId=${data.orderID}`);
+          toast.success("Payment successful");
         }
-
-        // Reset the cart after successful order
-        resetCart();
-
-        router.push(`/success?orderId=${data.orderID}`);
-        toast.success("Payment successful");
       }
     } catch (error) {
       console.error("Capture order error:", error);

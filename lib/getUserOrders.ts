@@ -17,14 +17,24 @@ export async function getUserOrders(): Promise<GetUserOrdersResponse> {
 
     let orders: Order[] = [];
     if (userId) {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/clerk/${userId}`,
-        { cache: "no-store" }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch orders");
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/clerk/${userId}`,
+          { cache: "no-store" }
+        );
+
+        if (response.status === 404) {
+          // No orders found, return empty array
+          console.log("No orders found for user:", userId);
+        } else if (!response.ok) {
+          throw new Error("Failed to fetch orders");
+        } else {
+          orders = await response.json();
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        throw error;
       }
-      orders = await response.json();
     }
 
     const user = clerkUser

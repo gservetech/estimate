@@ -6,11 +6,11 @@ interface GetClientOrdersResponse {
 }
 
 export async function getClientOrders(
-  clerkId: string
+  clerkId: string | null | undefined
 ): Promise<GetClientOrdersResponse> {
   try {
     if (!clerkId) {
-      throw new Error("Clerk ID is required");
+      return { orders: [], error: "Clerk ID is required" };
     }
 
     const response = await fetch(
@@ -23,7 +23,11 @@ export async function getClientOrders(
       }
     );
 
-    if (!response.ok) {
+    if (response.status === 404) {
+      // No orders found, return empty array
+      console.log("No orders found for user:", clerkId);
+      return { orders: [], error: null };
+    } else if (!response.ok) {
       throw new Error("Failed to fetch orders");
     }
 

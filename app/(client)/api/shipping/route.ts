@@ -82,7 +82,33 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { destination, products } = body;
 
-    // console.log("body", body);
+    // Validate postal code
+    const postalCode = destination?.postalCode;
+    if (!postalCode) {
+      return NextResponse.json(
+        { error: "Postal code is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate Canadian postal code format
+    const canadianPostalCodeRegex = /^[A-Z]\d[A-Z]\d[A-Z]\d$/;
+    if (!canadianPostalCodeRegex.test(postalCode)) {
+      return NextResponse.json(
+        {
+          error: "Invalid Canadian postal code format. Expected format: A1B2C3",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate products
+    if (!products || !Array.isArray(products) || products.length === 0) {
+      return NextResponse.json(
+        { error: "Products are required and must be a non-empty array" },
+        { status: 400 }
+      );
+    }
 
     // Initialize total weight and combined dimensions
     let totalWeight = 0;
@@ -109,6 +135,12 @@ export async function POST(req: Request) {
       }
     );
 
+    // Ensure minimum values for weight and dimensions
+    totalWeight = Math.max(totalWeight, 0.1); // Minimum weight 0.1 kg
+    totalLength = Math.max(totalLength, 1); // Minimum length 1 cm
+    totalWidth = Math.max(totalWidth, 1); // Minimum width 1 cm
+    totalHeight = Math.max(totalHeight, 1); // Minimum height 1 cm
+
     // Build the XML request body
     const requestBody = `
       <mailing-scenario xmlns="http://www.canadapost.ca/ws/ship/rate-v4">
@@ -125,7 +157,7 @@ export async function POST(req: Request) {
         <origin-postal-code>${ORIGIN_POSTAL_CODE}</origin-postal-code>
         <destination>
           <domestic>
-            <postal-code>${destination.postalCode}</postal-code>
+            <postal-code>${postalCode}</postal-code>
           </domestic>
         </destination>
       </mailing-scenario>
@@ -145,8 +177,33 @@ export async function POST(req: Request) {
     // Parse the response
     const parsedResponse = await xml2js.parseStringPromise(response.data);
 
+    // Check if the response contains price-quotes
+    if (
+      !parsedResponse["price-quotes"] ||
+      !parsedResponse["price-quotes"]["price-quote"]
+    ) {
+      console.error(
+        "Invalid response format from Canada Post API:",
+        parsedResponse
+      );
+      return NextResponse.json(
+        { error: "Invalid response format from Canada Post API" },
+        { status: 500 }
+      );
+    }
+
     // Extract multiple pricing options
     const priceQuotes = parsedResponse["price-quotes"]["price-quote"];
+
+    // Check if priceQuotes is an array and not empty
+    if (!Array.isArray(priceQuotes) || priceQuotes.length === 0) {
+      console.error("No shipping options available for this destination");
+      return NextResponse.json(
+        { error: "No shipping options available for this destination" },
+        { status: 404 }
+      );
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const options = priceQuotes.map((quote: any) => ({
       service: quote["service-name"][0],
@@ -157,8 +214,33 @@ export async function POST(req: Request) {
     return NextResponse.json({ options });
   } catch (error) {
     console.error("Error fetching shipping rate:", error);
+
+    // Handle Axios errors
+    if (axios.isAxiosError(error)) {
+      const statusCode = error.response?.status || 500;
+      const errorMessage = error.response?.data
+        ? typeof error.response.data === "string"
+          ? error.response.data
+          : JSON.stringify(error.response.data)
+        : error.message;
+
+      console.error(`Axios error (${statusCode}):`, errorMessage);
+
+      return NextResponse.json(
+        {
+          error: `Canada Post API error: ${errorMessage}`,
+          details: error.response?.data,
+        },
+        { status: statusCode }
+      );
+    }
+
+    // Handle other errors
     return NextResponse.json(
-      { error: "Failed to fetch shipping rate from Canada Post API" },
+      {
+        error: "Failed to fetch shipping rate from Canada Post API",
+        message: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }

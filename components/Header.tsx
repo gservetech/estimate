@@ -10,6 +10,7 @@ import {
   SignedOut,
   SignInButton,
   UserButton,
+  useAuth,
 } from "@clerk/nextjs";
 import axios from "axios";
 import Image from "next/image";
@@ -20,27 +21,148 @@ import { FaBars, FaPhone } from "react-icons/fa6";
 import { FiUser } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import CartIcon from "./CartIcon";
+import { getClientOrders } from "@/lib/getClientOrders";
 
 interface HeaderProps {
   user: User | null;
   orders: Order[];
 }
 
-const Header: React.FC<HeaderProps> = ({ orders: initialOrders }) => {
+const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
   const [country, setCountry] = useState<string>("CA");
   const [currency, setCurrency] = useState<string>("CAD");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isClient, setIsClient] = useState(false);
-  const { setOrders, getOrdersCount } = useOrderStore();
+  const {
+    setOrders,
+    getOrdersCount,
+    clearOrders,
+    setUserId,
+    orders: storeOrders,
+  } = useOrderStore();
+  const { userId } = useAuth();
+  const [orderCount, setOrderCount] = useState<number>(0);
 
+  // Effect to handle initial order loading
   useEffect(() => {
     setIsClient(true);
+
     // Initialize the order store with the server-provided orders
-    // Only set orders if they don't already exist in the store or if the count has changed
-    if (initialOrders && initialOrders.length > 0) {
+    if (initialOrders && initialOrders.length > 0 && user?.clerkId) {
+      console.log(
+        "Setting initial orders:",
+        initialOrders.length,
+        "orders for user:",
+        user.clerkId
+      );
+      setUserId(user.clerkId);
       setOrders(initialOrders);
+
+      // Update local order count
+      setOrderCount(initialOrders.length);
     }
-  }, [initialOrders, setOrders]);
+  }, [initialOrders, setOrders, user?.clerkId, setUserId]);
+
+  // Effect to update order count when store orders change
+  useEffect(() => {
+    if (isClient) {
+      const count = storeOrders.length;
+      console.log("Store orders changed, new count:", count);
+      setOrderCount(count);
+    }
+  }, [storeOrders, isClient]);
+
+  // Effect to handle user changes and clear orders when user changes
+  useEffect(() => {
+    if (user?.clerkId) {
+      // Set the user ID in the order store
+      console.log("Setting user ID in store:", user.clerkId);
+      setUserId(user.clerkId);
+
+      // If we're on the client side, fetch orders for this user
+      if (isClient && user.clerkId) {
+        const fetchUserOrders = async () => {
+          try {
+            const { orders, error } = await getClientOrders(
+              user.clerkId as string
+            );
+            if (!error && orders) {
+              console.log("Fetched client orders:", orders.length, "orders");
+              setOrders(orders);
+              setOrderCount(orders.length);
+            } else if (error) {
+              console.error("Error fetching orders:", error);
+            }
+          } catch (error) {
+            console.error("Error fetching orders:", error);
+          }
+        };
+
+        fetchUserOrders();
+      }
+    }
+  }, [user?.clerkId, setUserId, isClient, setOrders]);
+
+  // Effect to clear orders when user signs out
+  useEffect(() => {
+    if (!userId && isClient) {
+      // User has signed out
+      console.log("User signed out, clearing orders");
+      clearOrders();
+      setOrderCount(0);
+    }
+  }, [userId, isClient, clearOrders]);
+
+  // Effect to fetch orders when userId changes (user logs in)
+  useEffect(() => {
+    if (userId && isClient) {
+      console.log("User ID changed, fetching orders for:", userId);
+      const fetchUserOrders = async () => {
+        try {
+          const { orders, error } = await getClientOrders(userId);
+          if (!error && orders) {
+            console.log(
+              "Fetched orders after user ID change:",
+              orders.length,
+              "orders"
+            );
+            setOrders(orders);
+            setOrderCount(orders.length);
+          } else if (error) {
+            console.error("Error fetching orders:", error);
+          }
+        } catch (error) {
+          console.error("Error fetching orders:", error);
+        }
+      };
+
+      fetchUserOrders();
+    }
+  }, [userId, isClient, setOrders]);
+
+  // Debug log for order count
+  useEffect(() => {
+    if (isClient) {
+      const storeOrderCount = getOrdersCount();
+      const storeState = useOrderStore.getState();
+      console.log("Order count debug:", {
+        storeOrderCount,
+        storeUserId: storeState.userId,
+        storeOrdersLength: storeState.orders.length,
+        localOrderCount: orderCount,
+        initialOrdersLength: initialOrders?.length || 0,
+        clerkUserId: userId,
+        userClerkId: user?.clerkId,
+      });
+    }
+  }, [
+    isClient,
+    getOrdersCount,
+    orderCount,
+    initialOrders,
+    userId,
+    user?.clerkId,
+  ]);
 
   useEffect(() => {
     const fetchAndStoreVisit = async () => {
@@ -74,8 +196,9 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders }) => {
     fetchAndStoreVisit();
   }, []);
 
-  // Get the order count from the store if on client, otherwise use the initial orders
-  const orderCount = isClient ? getOrdersCount() : initialOrders?.length ?? 0;
+  // Use our local state for order count instead of relying on the store
+  // This ensures we always show the correct count even if the store's getOrdersCount
+  // function has conditions that might prevent it from returning the actual count
 
   return (
     <>
@@ -184,7 +307,7 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders }) => {
                 <SignedIn>
                   <div className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors">
                     <UserButton
-                      fallback="/"
+                      afterSignOutUrl="/"
                       appearance={{
                         elements: {
                           avatarBox: "w-8 h-8",

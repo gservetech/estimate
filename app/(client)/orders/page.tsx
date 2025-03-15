@@ -30,7 +30,7 @@ interface OrderProduct {
 const OrdersPage = async () => {
   const {
     user,
-    orders,
+    orders: unsortedOrders,
     error,
   }: {
     user: User | null;
@@ -41,6 +41,13 @@ const OrdersPage = async () => {
   if (!user) {
     return redirect("/");
   }
+
+  // Sort orders by date in descending order (newest first)
+  const orders = [...unsortedOrders].sort((a, b) => {
+    const dateA = a.orderdate ? new Date(a.orderdate).getTime() : 0;
+    const dateB = b.orderdate ? new Date(b.orderdate).getTime() : 0;
+    return dateB - dateA;
+  });
 
   // Handle API errors (like connection issues)
   if (error) {

@@ -113,21 +113,6 @@ const CartPage = () => {
     if (isClient) {
       console.log("Current destination:", destination);
       console.log("Current cities list:", cities);
-
-      // If we have a city from autocomplete but it's not selected in the dropdown,
-      // force select it by updating the destination
-      if (
-        destination.city &&
-        cities.length > 0 &&
-        !cities.some((city) => city.city_name === destination.city)
-      ) {
-        console.log(
-          "City from autocomplete not in dropdown, forcing selection"
-        );
-
-        // Force update to trigger re-render
-        setDestination((prev) => ({ ...prev }));
-      }
     }
   }, [destination, cities, isClient]);
 

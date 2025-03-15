@@ -172,23 +172,9 @@ const AutoCompleteAddressInput = ({
       postalCode: addressComponents.postcode,
     };
 
-    // First set the state to ensure cities are loaded
-    if (addressComponents.region) {
-      setDestination((prev) => ({
-        ...prev,
-        state: addressComponents.region,
-      }));
-
-      // Then set the full address with a small delay to ensure the cities list is updated
-      setTimeout(() => {
-        setDestination(extractedAddress);
-        console.log("Setting destination with delay:", extractedAddress);
-      }, 200);
-    } else {
-      // If no region/state, just set the address directly
-      setDestination(extractedAddress);
-      console.log("Setting destination directly:", extractedAddress);
-    }
+    // Set the destination directly with all fields in a single step
+    setDestination(extractedAddress);
+    console.log("Setting destination:", extractedAddress);
 
     setSuggestions([]);
   };

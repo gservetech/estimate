@@ -88,11 +88,6 @@ export async function POST(
         ],
       };
 
-      console.log(
-        "Creating order with data:",
-        JSON.stringify(orderData, null, 2)
-      );
-
       // Make the request directly to the backend server
       const orderResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/create`,
@@ -106,8 +101,6 @@ export async function POST(
       );
 
       const orderResult = await orderResponse.json();
-
-      console.log("Order creation result:", orderResult);
 
       if (!orderResponse.ok) {
         console.error("Failed to create order:", orderResult);

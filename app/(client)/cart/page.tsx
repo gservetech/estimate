@@ -110,21 +110,7 @@ const CartPage = () => {
         }
       });
 
-      // Log for debugging
-      console.log(
-        "Filtered cities for state:",
-        destination.state,
-        filteredCities
-      );
-
-      // If no cities found for this state but we have a city from autocomplete,
-      // create a custom city entry
       if (filteredCities.length === 0 && destination.city) {
-        console.log(
-          "No cities found for state, but we have a city:",
-          destination.city
-        );
-
         // Create a custom city entry
         const customCity = {
           id: Date.now(),
@@ -140,7 +126,6 @@ const CartPage = () => {
 
         // Set cities with our custom entry
         setCities([customCity]);
-        console.log("Added custom city:", customCity);
       } else {
         // Set the filtered cities
         setCities(filteredCities);
@@ -151,8 +136,6 @@ const CartPage = () => {
   // This useEffect handles city selection when destination changes
   useEffect(() => {
     if (destination.city && destination.state && cities.length > 0) {
-      console.log("Looking for city match for:", destination.city);
-
       // Try to find a matching city in the dropdown
       const cityMatch = cities.find(
         (city) =>
@@ -160,7 +143,6 @@ const CartPage = () => {
       );
 
       if (cityMatch && !destination.cityId) {
-        console.log("Found matching city, setting cityId:", cityMatch.id);
         setDestination((prev) => ({
           ...prev,
           cityId: cityMatch.id,
@@ -170,10 +152,7 @@ const CartPage = () => {
   }, [destination.city, destination.state, cities, destination.cityId]);
 
   // Add this useEffect for debugging
-  useEffect(() => {
-    console.log("Current destination state:", destination);
-    console.log("Available cities:", cities);
-  }, [destination, cities]);
+  useEffect(() => {}, [destination, cities]);
 
   if (!isClient) {
     return <Loader />;

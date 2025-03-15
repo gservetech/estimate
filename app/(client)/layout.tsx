@@ -9,6 +9,8 @@ import Header from "@/components/Header";
 import { getUserOrders } from "@/lib/getUserOrders";
 import { Toaster } from "react-hot-toast";
 
+export const dynamic = "force-dynamic";
+
 const poppins = localFont({
   src: "../fonts/Poppins.woff2",
   variable: "--font-poppins",

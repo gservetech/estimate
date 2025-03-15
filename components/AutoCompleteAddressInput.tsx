@@ -94,8 +94,6 @@ const AutoCompleteAddressInput = ({
   };
 
   const handleSuggestionClick = (suggestion: MapboxFeature) => {
-    console.log("Selected suggestion:", suggestion);
-
     // Extract street address from the place_name
     const streetAndNumber = suggestion.place_name.split(",")[0];
 
@@ -143,13 +141,6 @@ const AutoCompleteAddressInput = ({
         addressComponents.place = parts[1]; // Second part is usually the city
       }
     }
-
-    console.log("Extracted address components:", {
-      street: streetAndNumber,
-      city: addressComponents.place,
-      state: addressComponents.region,
-      postalCode: addressComponents.postcode,
-    });
 
     // Set the destination with all fields
     setDestination((prev) => ({

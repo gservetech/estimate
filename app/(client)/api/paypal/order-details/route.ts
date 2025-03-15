@@ -6,8 +6,6 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const orderId = searchParams.get("orderId");
 
-  console.log("orderId", orderId);
-
   if (!orderId) {
     return NextResponse.json({ error: "Missing orderId" }, { status: 400 });
   }
@@ -36,7 +34,6 @@ export async function GET(request: Request) {
       createdAt: order.create_time,
     };
 
-    console.log("Order Details:", orderDetails);
     return NextResponse.json({ order: orderDetails });
   } catch (error) {
     console.error("Error fetching order details:", error);

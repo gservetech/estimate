@@ -37,8 +37,7 @@ export default function Home() {
             );
 
             if (userExistsResponse.ok) {
-              const existingUser = await userExistsResponse.json();
-              console.log("Existing user found:", existingUser);
+              await userExistsResponse.json();
               return;
             }
 
@@ -56,9 +55,7 @@ export default function Home() {
 
             const result = await createUser(userData);
             if (result.success) {
-              console.log("User created successfully:", result.data);
             } else {
-              console.error("Error creating user:", result.error);
             }
           } catch (apiError) {
             console.error("API Error:", apiError);
@@ -77,10 +74,6 @@ export default function Home() {
 
             const result = await createUser(userData);
             if (result.success) {
-              console.log(
-                "User created successfully after API error:",
-                result.data
-              );
             } else {
               console.error(
                 "Error creating user after API error:",

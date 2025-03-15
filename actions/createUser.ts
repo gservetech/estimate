@@ -47,7 +47,6 @@ export async function createUser(userData: UserData) {
     }
 
     const result = await response.json();
-    console.log("result", result);
 
     return { success: true, data: result };
   } catch (error) {

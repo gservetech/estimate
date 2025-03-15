@@ -49,12 +49,6 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
 
     // Initialize the order store with the server-provided orders
     if (initialOrders && initialOrders.length > 0 && user?.clerkId) {
-      console.log(
-        "Setting initial orders:",
-        initialOrders.length,
-        "orders for user:",
-        user.clerkId
-      );
       setUserId(user.clerkId);
       setOrders(initialOrders);
 
@@ -67,7 +61,6 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
   useEffect(() => {
     if (isClient) {
       const count = storeOrders.length;
-      console.log("Store orders changed, new count:", count);
       setOrderCount(count);
     }
   }, [storeOrders, isClient]);
@@ -76,7 +69,6 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
   useEffect(() => {
     if (user?.clerkId) {
       // Set the user ID in the order store
-      console.log("Setting user ID in store:", user.clerkId);
       setUserId(user.clerkId);
 
       // If we're on the client side, fetch orders for this user
@@ -87,7 +79,6 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
               user.clerkId as string
             );
             if (!error && orders) {
-              console.log("Fetched client orders:", orders.length, "orders");
               setOrders(orders);
               setOrderCount(orders.length);
             } else if (error) {
@@ -107,7 +98,6 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
   useEffect(() => {
     if (!userId && isClient) {
       // User has signed out
-      console.log("User signed out, clearing orders");
       clearOrders();
       setOrderCount(0);
     }
@@ -116,16 +106,10 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
   // Effect to fetch orders when userId changes (user logs in)
   useEffect(() => {
     if (userId && isClient) {
-      console.log("User ID changed, fetching orders for:", userId);
       const fetchUserOrders = async () => {
         try {
           const { orders, error } = await getClientOrders(userId);
           if (!error && orders) {
-            console.log(
-              "Fetched orders after user ID change:",
-              orders.length,
-              "orders"
-            );
             setOrders(orders);
             setOrderCount(orders.length);
           } else if (error) {

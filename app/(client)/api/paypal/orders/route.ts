@@ -44,15 +44,10 @@ export async function POST(request: Request) {
     });
 
     const requestBody = paypalRequest.body; // Access the body of the request
-    console.log(
-      "PayPal OrdersCreateRequest:",
-      JSON.stringify(requestBody, null, 2)
-    );
 
     // Check if custom_id exists in purchase_units
     const purchaseUnits = requestBody.purchase_units;
     if (purchaseUnits && purchaseUnits[0] && purchaseUnits[0].custom_id) {
-      console.log("custom_id is included:", purchaseUnits[0].custom_id);
     } else {
       console.error("custom_id is missing in purchase_units");
       return NextResponse.json(

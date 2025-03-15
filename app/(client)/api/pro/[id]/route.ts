@@ -7,8 +7,6 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log("Fetching product by id");
-
     const { id } = await params;
 
     const filePath = path.join(process.cwd(), "public", "products.json");

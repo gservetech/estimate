@@ -1,29 +1,16 @@
 import { Input } from "@/components/ui/input";
 import { MapboxFeature } from "@/types/mapbox_types";
-import React, {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Destination } from "@/types/address.types";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 
 interface AutoCompleteAddressInputProps {
-  address: string;
+  destination: Destination;
   handleAddressManualChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  setDestination: Dispatch<
-    SetStateAction<{
-      address: string;
-      city: string;
-      state: string;
-      postalCode: string;
-    }>
-  >;
+  setDestination: React.Dispatch<React.SetStateAction<Destination>>;
 }
 
 const AutoCompleteAddressInput = ({
-  address,
+  destination,
   setDestination,
   handleAddressManualChange,
 }: AutoCompleteAddressInputProps) => {
@@ -164,17 +151,14 @@ const AutoCompleteAddressInput = ({
       postalCode: addressComponents.postcode,
     });
 
-    // Create the full address object
-    const extractedAddress = {
+    // Set the destination with all fields
+    setDestination((prev) => ({
+      ...prev,
       address: streetAndNumber,
       city: addressComponents.place,
       state: addressComponents.region,
       postalCode: addressComponents.postcode,
-    };
-
-    // Set the destination directly with all fields in a single step
-    setDestination(extractedAddress);
-    console.log("Setting destination:", extractedAddress);
+    }));
 
     setSuggestions([]);
   };
@@ -187,7 +171,7 @@ const AutoCompleteAddressInput = ({
           type="search"
           placeholder="Search..."
           name="address"
-          value={address}
+          value={destination.address}
           className="border-none px-0 font-medium text-xs outline-none focus:ring-0 w-full"
           onChange={handleChange}
         />

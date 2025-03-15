@@ -30,6 +30,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Destination } from "@/types/address.types";
 
 interface CartProducts {
   weight: number;
@@ -39,13 +40,14 @@ interface CartProducts {
   quantity: number;
 }
 
-// Initiate address state
-const INITIATE_ADDRESS = {
-  address: "",
-  city: "",
-  state: "",
-  postalCode: "",
-};
+// Remove or comment out this unused constant
+// const INITIATE_ADDRESS = {
+//   address: "",
+//   city: "",
+//   state: "",
+//   postalCode: "",
+//   cityId: null as number | null,
+// };
 
 interface ShippingOption {
   service: string;
@@ -65,7 +67,13 @@ const CartPage = () => {
   const groupedItems = useCartStore((state) => state.getGroupedItems());
   const { isSignedIn } = useAuth();
   const [showShipping, setShowShipping] = useState(1);
-  const [destination, setDestination] = useState(INITIATE_ADDRESS);
+  const [destination, setDestination] = useState<Destination>({
+    address: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    cityId: null,
+  });
   const [cities, setCities] = useState<{ id: number; city_name: string }[]>([]);
   const [shippingCostList, setShippingCostList] = useState<ShippingOption[]>(
     []
@@ -102,19 +110,70 @@ const CartPage = () => {
         }
       });
 
-      // Set the filtered cities
-      setCities(filteredCities);
-      console.log("Set filtered cities:", filteredCities);
+      // Log for debugging
+      console.log(
+        "Filtered cities for state:",
+        destination.state,
+        filteredCities
+      );
+
+      // If no cities found for this state but we have a city from autocomplete,
+      // create a custom city entry
+      if (filteredCities.length === 0 && destination.city) {
+        console.log(
+          "No cities found for state, but we have a city:",
+          destination.city
+        );
+
+        // Create a custom city entry
+        const customCity = {
+          id: Date.now(),
+          city_name: destination.city,
+          // Add minimal required properties to avoid type errors
+          state: { id: null, state_name: null },
+          province: { id: null, province_name: null },
+          country: {
+            id: isCanada ? 2 : 1,
+            country_name: isCanada ? "Canada" : "United States",
+          },
+        };
+
+        // Set cities with our custom entry
+        setCities([customCity]);
+        console.log("Added custom city:", customCity);
+      } else {
+        // Set the filtered cities
+        setCities(filteredCities);
+      }
     }
-  }, [destination.state, country]);
+  }, [destination.state, destination.city, country]);
+
+  // This useEffect handles city selection when destination changes
+  useEffect(() => {
+    if (destination.city && destination.state && cities.length > 0) {
+      console.log("Looking for city match for:", destination.city);
+
+      // Try to find a matching city in the dropdown
+      const cityMatch = cities.find(
+        (city) =>
+          city.city_name.toLowerCase() === destination.city.toLowerCase()
+      );
+
+      if (cityMatch && !destination.cityId) {
+        console.log("Found matching city, setting cityId:", cityMatch.id);
+        setDestination((prev) => ({
+          ...prev,
+          cityId: cityMatch.id,
+        }));
+      }
+    }
+  }, [destination.city, destination.state, cities, destination.cityId]);
 
   // Add this useEffect for debugging
   useEffect(() => {
-    if (isClient) {
-      console.log("Current destination:", destination);
-      console.log("Current cities list:", cities);
-    }
-  }, [destination, cities, isClient]);
+    console.log("Current destination state:", destination);
+    console.log("Available cities:", cities);
+  }, [destination, cities]);
 
   if (!isClient) {
     return <Loader />;
@@ -300,51 +359,70 @@ const CartPage = () => {
                           className="space-y-2"
                         >
                           <AutoCompleteAddressInput
-                            address={destination.address}
+                            destination={destination}
                             handleAddressManualChange={
                               handleAddressManualChange
                             }
                             setDestination={setDestination}
                           />
 
+                          {/* City field */}
                           <div>
-                            <p className="text-sm">City</p>
-                            {destination.city &&
-                            !cities.some(
-                              (city) => city.city_name === destination.city
-                            ) ? (
-                              <input
-                                type="text"
-                                value={destination.city}
-                                disabled
-                                className="border rounded-md px-3 w-full py-2 bg-gray-100"
-                              />
+                            {destination.city && !destination.cityId ? (
+                              // If we have a city from autocomplete but no matching cityId, show a disabled input
+                              <div className="flex flex-col gap-2">
+                                <label htmlFor="city">City</label>
+                                <input
+                                  type="text"
+                                  id="city"
+                                  value={destination.city}
+                                  disabled
+                                  className="p-2 border rounded-md bg-gray-100"
+                                />
+                                <p className="text-xs text-gray-500">
+                                  City selected from address autocomplete
+                                </p>
+                              </div>
                             ) : (
-                              <Select
-                                value={destination.city || ""}
-                                onValueChange={(value) => {
-                                  setDestination((prev) => ({
-                                    ...prev,
-                                    city: value,
-                                  }));
-                                }}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Select City" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {cities.map((city) => (
-                                    <SelectItem
-                                      key={city.id}
-                                      value={city.city_name}
-                                    >
-                                      {city.city_name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              // Otherwise show the regular city dropdown
+                              <div className="flex flex-col gap-2">
+                                <label htmlFor="city">City</label>
+                                <Select
+                                  value={destination.cityId?.toString()}
+                                  onValueChange={(value) => {
+                                    const selectedCity = cities.find(
+                                      (city) => city.id.toString() === value
+                                    );
+                                    if (selectedCity) {
+                                      setDestination({
+                                        ...destination,
+                                        cityId: selectedCity.id,
+                                        city: selectedCity.city_name,
+                                      });
+                                    }
+                                  }}
+                                  disabled={
+                                    !destination.state || cities.length === 0
+                                  }
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a city" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {cities.map((city) => (
+                                      <SelectItem
+                                        key={city.id}
+                                        value={city.id.toString()}
+                                      >
+                                        {city.city_name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
                             )}
                           </div>
+
                           <div>
                             <p className="text-sm">
                               {country === "CA" ? "Province" : "State"}
@@ -525,8 +603,6 @@ const CartPage = () => {
                           {/*    type="submit"*/}
                           {/*    onClick={() => handleCheckout()}*/}
                           {/*    disabled={loading}*/}
-                          {/*    className="w-full"*/}
-                          {/*    size="lg"*/}
                           {/*>*/}
                           {/*    {loading*/}
                           {/*        ? "Processing checkout..."*/}

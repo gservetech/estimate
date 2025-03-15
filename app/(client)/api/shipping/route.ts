@@ -137,9 +137,29 @@ export async function POST(req: Request) {
 
     // Ensure minimum values for weight and dimensions
     totalWeight = Math.max(totalWeight, 0.1); // Minimum weight 0.1 kg
-    totalLength = Math.max(totalLength, 1); // Minimum length 1 cm
-    totalWidth = Math.max(totalWidth, 1); // Minimum width 1 cm
-    totalHeight = Math.max(totalHeight, 1); // Minimum height 1 cm
+    totalLength = Math.max(totalLength, 10); // Minimum length 10 cm
+    totalWidth = Math.max(totalWidth, 10); // Minimum width 10 cm
+    totalHeight = Math.max(totalHeight, 10); // Minimum height 10 cm
+
+    // Ensure maximum values for weight and dimensions (Canada Post limits)
+    totalWeight = Math.min(totalWeight, 30); // Maximum weight 30 kg
+    totalLength = Math.min(totalLength, 200); // Maximum length 200 cm
+    totalWidth = Math.min(totalWidth, 200); // Maximum width 200 cm
+    totalHeight = Math.min(totalHeight, 200); // Maximum height 200 cm
+
+    // Ensure the length + girth is within Canada Post's limits
+    // Girth = 2 * (width + height)
+    const girth = 2 * (totalWidth + totalHeight);
+    const lengthPlusGirth = totalLength + girth;
+
+    // Canada Post's maximum length + girth is 300 cm
+    if (lengthPlusGirth > 300) {
+      // Scale down dimensions proportionally
+      const scaleFactor = 300 / lengthPlusGirth;
+      totalLength = Math.floor(totalLength * scaleFactor);
+      totalWidth = Math.floor(totalWidth * scaleFactor);
+      totalHeight = Math.floor(totalHeight * scaleFactor);
+    }
 
     // Build the XML request body
     const requestBody = `
@@ -218,17 +238,49 @@ export async function POST(req: Request) {
     // Handle Axios errors
     if (axios.isAxiosError(error)) {
       const statusCode = error.response?.status || 500;
-      const errorMessage = error.response?.data
-        ? typeof error.response.data === "string"
-          ? error.response.data
-          : JSON.stringify(error.response.data)
-        : error.message;
+      let errorMessage = "Canada Post API error";
+
+      // Try to parse XML error response from Canada Post
+      if (error.response?.data && typeof error.response.data === "string") {
+        try {
+          // Parse the XML error response
+          const xmlErrorData = await xml2js.parseStringPromise(
+            error.response.data
+          );
+
+          // Extract error code and description from Canada Post response
+          if (xmlErrorData.messages && xmlErrorData.messages.message) {
+            const cpError = xmlErrorData.messages.message[0];
+            const errorCode = cpError.code ? cpError.code[0] : "Unknown";
+            const errorDesc = cpError.description
+              ? cpError.description[0]
+              : "Unknown error";
+
+            errorMessage = `Canada Post Error (${errorCode}): ${errorDesc}`;
+
+            // Provide more user-friendly messages for common errors
+            if (errorCode === "9111") {
+              errorMessage =
+                "The package dimensions or weight are outside Canada Post's acceptable range. Please check your product specifications.";
+            } else if (errorCode === "9012") {
+              errorMessage =
+                "Invalid postal code format. Please enter a valid Canadian postal code.";
+            }
+          }
+        } catch (xmlError) {
+          console.error("Error parsing Canada Post XML error:", xmlError);
+          errorMessage =
+            typeof error.response.data === "string"
+              ? error.response.data
+              : JSON.stringify(error.response.data);
+        }
+      }
 
       console.error(`Axios error (${statusCode}):`, errorMessage);
 
       return NextResponse.json(
         {
-          error: `Canada Post API error: ${errorMessage}`,
+          error: errorMessage,
           details: error.response?.data,
         },
         { status: statusCode }

@@ -92,7 +92,7 @@ const ProductCard = ({ product, own }: { product: Product; own: boolean }) => {
                 Buy from
                 <br />
                 <span className="bg-yellow-300 text-black font-bold px-2 py-1 rounded-md">
-                  {product.affiliate_provider?.name || "Now"}
+                  {product.affiliate_provider_name || "Now"}
                 </span>
               </button>
 

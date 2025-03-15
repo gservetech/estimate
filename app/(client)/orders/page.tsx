@@ -17,6 +17,9 @@ import { Calendar, FileX, Package } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+// Force dynamic rendering for this page
+export const dynamic = "force-dynamic";
+
 // Update the Order type to match your actual data structure
 interface OrderProduct {
   product_id: number;

@@ -1,5 +1,3 @@
-import { AffiliateProvider } from "./affiliateprovider.types";
-
 export interface Product {
   id: number;
   name: string;
@@ -15,7 +13,7 @@ export interface Product {
   label?: string;
   status_id?: number;
   status?: { id: number; name: string };
-  affiliate_provider?: AffiliateProvider | null;
+  affiliate_provider_name?: string;
   created_at?: string;
   updated_at?: string;
   product_url?: string;

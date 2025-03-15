@@ -15,11 +15,11 @@ export async function fetchProducts(): Promise<{
     const productData: Product[] = await response.json();
 
     const ourProducts = productData.filter(
-      (item) => item.affiliate_provider?.name === "GServeTech"
+      (item) => item.affiliate_provider_name === "GServeTech"
     );
 
     const otherProducts = productData.filter(
-      (item) => item.affiliate_provider?.name !== "GServeTech"
+      (item) => item.affiliate_provider_name !== "GServeTech"
     );
 
     return { ourProducts, otherProducts };

@@ -120,6 +120,7 @@ export async function POST(
       return NextResponse.json<CaptureOrderResponse>({
         status: result.status,
         id: result.id,
+        orderNumber: orderResult.orderNumber,
       });
     }
 

@@ -8,6 +8,7 @@ export interface CreateOrderResponse {
 export interface CaptureOrderResponse {
   status: string;
   id: string;
+  orderNumber: string;
 }
 
 const configureEnvironment = function () {

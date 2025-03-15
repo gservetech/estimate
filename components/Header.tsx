@@ -30,7 +30,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
   const [country, setCountry] = useState<string>("CA");
-  const [currency, setCurrency] = useState<string>("CAD");
+  const [currency] = useState<string>("CAD");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isClient, setIsClient] = useState(false);
   const {
@@ -219,33 +219,13 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
               width={24}
               height={24}
             />
-            <select
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className="border-none bg-transparent text-sm text-white font-bold"
-            >
-              <option value="CA" className="text-black">
-                Canada
-              </option>
-              <option value="US" className="text-black">
-                USA
-              </option>
-            </select>
+            <span className="text-sm text-white font-bold">
+              {country === "CA" ? "Canada" : "USA"}
+            </span>
           </div>
           <div className="flex items-center gap-1 px-3">
-            <p>$</p>
-            <select
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              className="border-none bg-transparent text-sm text-white font-bold"
-            >
-              <option value="CAD" className="text-black">
-                CAD
-              </option>
-              <option value="USD" className="text-black">
-                USD
-              </option>
-            </select>
+            <span>$</span>
+            <span className="text-sm text-white font-bold">{currency}</span>
           </div>
         </div>
       </div>

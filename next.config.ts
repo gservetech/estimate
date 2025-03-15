@@ -2,14 +2,35 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: [
-      "clerk.gservetech.com",
-      "m.media-amazon.com",
-      "i5.walmartimages.com",
-      "i5.walmartimages.ca",
-      "ae-pic-a1.aliexpress-media.com",
-      "multimedia.bbycastatic.ca",
-      "bbycastatic.ca",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "clerk.gservetech.com",
+      },
+      {
+        protocol: "https",
+        hostname: "m.media-amazon.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i5.walmartimages.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i5.walmartimages.ca",
+      },
+      {
+        protocol: "https",
+        hostname: "ae-pic-a1.aliexpress-media.com",
+      },
+      {
+        protocol: "https",
+        hostname: "multimedia.bbycastatic.ca",
+      },
+      {
+        protocol: "https",
+        hostname: "bbycastatic.ca",
+      },
     ],
   },
 

@@ -9,7 +9,7 @@ import Link from "next/link";
 
 const SuccessPage = () => {
   const searchParams = useSearchParams();
-  const orderNumber = searchParams.get("orderNumber");
+  const orderNumber = searchParams.get("orderId");
   const clearCart = useCartStore((state) => state.resetCart);
 
   useEffect(() => {
@@ -44,10 +44,10 @@ const SuccessPage = () => {
             will ship it soon. A confirmation email with your order details will
             be sent to your inbox shortly.
           </p>
-          <p className="text-gray-600">
+          {/* <p className="text-gray-600">
             Order Number:{" "}
             <span className="text-black font-semibold">{orderNumber}</span>
-          </p>
+          </p> */}
         </div>
 
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">

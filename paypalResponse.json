@@ -1,0 +1,135 @@
+{
+  "statusCode": 201,
+  "headers": {
+    "content-type": "application/json",
+    "content-length": "1793",
+    "connection": "keep-alive",
+    "date": "Thu, 27 Feb 2025 09:34:05 GMT",
+    "access-control-expose-headers": "Server-Timing",
+    "application_id": "APP-80W284485P519543T",
+    "cache-control": "max-age=0, no-cache, no-store, must-revalidate",
+    "caller_acct_num": "7WGEHBU3QQ2QN",
+    "paypal-debug-id": "663fc2a04cb52",
+    "server-timing": "traceparent;desc=\"00-0000000000000000000663fc2a04cb52-42026ec3d1aa2174-01\"",
+    "traceparent": "00-0000000000000000000663fc2a04cb52-103b50906c35a7ba-01",
+    "vary": "Accept-Encoding",
+    "http_x_pp_az_locator": "ccg18.slc",
+    "strict-transport-security": "max-age=31536000; includeSubDomains"
+  },
+  "result": {
+    "id": "6NJ26353N7597172T",
+    "status": "COMPLETED",
+    "payment_source": {
+      "paypal": {
+        "email_address": "mrjamzee002@gmail.com",
+        "account_id": "3XDV7STJVM734",
+        "account_status": "UNVERIFIED",
+        "name": {
+          "given_name": "Muhamed",
+          "surname": "Kaish"
+        },
+        "address": {
+          "country_code": "LK"
+        },
+        "app_switch_eligibility": false
+      }
+    },
+    "purchase_units": [
+      {
+        "reference_id": "default ",
+        "shipping": {
+          "name": {
+            "full_name": "Muhamed Kaish"
+          },
+          "address": {
+            "address_line_1": "383a Sailan Road",
+            "admin_area_2": "Kalmunai",
+            "postal_code": "32300",
+            "country_code": "LK"
+          }
+        },
+        "pa yments": {
+          "captures": [
+            {
+              "id": "7V910374C1453262Y",
+              "status": "COMPLETED",
+              "amount": {
+                "currency_code": "USD",
+                "value": "199.29"
+              },
+              "final_capture": true,
+              "seller_protection": {
+                "status": "E LIGIBLE",
+                "dispute_categories": [
+                  "ITEM_NOT_RECEIVED",
+                  "UNAUTHORIZED_TRANSACTION"
+                ]
+              },
+              "seller_receivable_breakdown": {
+                "gross_amount": {
+                  "currency_code": "USD",
+                  "value": "199.29"
+                },
+                "pay pal_fee": {
+                  "currency_code": "USD",
+                  "value": "8.07"
+                },
+                "net_amount": {
+                  "currency_code": "USD",
+                  "value": "191.22"
+                },
+                "receivable_amount": {
+                  "currency_code": "CAD",
+                  "value": "265.38"
+                },
+                "exchang e_rate": {
+                  "source_currency": "USD",
+                  "target_currency": "CAD",
+                  "value": "1.38782475"
+                }
+              },
+              "custom_id": "user_2tLehfAeJc93HCKaprKXO6GnNOF",
+              "links": [
+                {
+                  "href": "https://api.sandbox.paypal.com/v2/payments/captures/7V910374C1453262Y",
+                  "r el": "self",
+                  "method": "GET"
+                },
+                {
+                  "href": "https://api.sandbox.paypal.com/v2/payments/captures/7V910374C1453262Y/refund",
+                  "rel": "refund",
+                  "method": "POST"
+                },
+                {
+                  "href": "https://api.sand box.paypal.com/v2/checkout/orders/6NJ26353N7597172T",
+                  "rel": "up",
+                  "method": "GET"
+                }
+              ],
+              "create_time": "2025-02-27T09:34:04Z",
+              "update_time": "2025-02-27T09:34:04Z"
+            }
+          ]
+        }
+      }
+    ],
+    "payer": {
+      "name": {
+        "given_name": "Muhamed",
+        "surname": "Kaish"
+      },
+      "email_address": "mrjamzee002@gmail.com",
+      "payer_id": "3XDV7STJVM734",
+      "address": {
+        "country_code": "LK"
+      }
+    },
+    "links": [
+      {
+        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/6NJ26353N7597172T",
+        "rel": "self",
+        "method": "GET"
+      }
+    ]
+  }
+}

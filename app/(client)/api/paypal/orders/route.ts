@@ -63,24 +63,9 @@ export async function POST(request: Request) {
 
     const response = await paypalClient().execute(paypalRequest);
 
-    // Store the order with user information
-    // const orderData = {
-    //   orderID: response.result.id,
-    //   userId: userId || null,
-    //   amount: Number(amount).toFixed(2),
-    //   status: "CREATED",
-    //   createdAt: new Date().toISOString(),
-    // };
-
-    // TODO: Save order data to your database here
-    // await prisma.order.create({ data: orderData });
-
     return NextResponse.json<CreateOrderResponse>({
       orderID: response.result.id,
     });
-
-    // Create the order in the database
-    // const order = await createOrder(amount);
   } catch (error) {
     console.error("Error creating order:", error);
     return NextResponse.json(

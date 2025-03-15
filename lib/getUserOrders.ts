@@ -18,7 +18,8 @@ export async function getUserOrders(): Promise<GetUserOrdersResponse> {
     let orders: Order[] = [];
     if (userId) {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/clerk/${userId}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/clerk/${userId}`,
+        { cache: "no-store" }
       );
       if (!response.ok) {
         throw new Error("Failed to fetch orders");

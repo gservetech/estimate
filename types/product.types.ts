@@ -13,8 +13,8 @@ export interface Product {
   height?: number | null;
   width?: number | null;
   label?: string;
-  status_id?: number; // Made optional
-  status?: { id: number; name: string }; // Added status object
+  status_id?: number;
+  status?: { id: number; name: string };
   affiliate_provider?: AffiliateProvider | null;
   created_at?: string;
   updated_at?: string;

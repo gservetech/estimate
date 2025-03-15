@@ -1,21 +1,24 @@
 export type Order = {
-  orderNumber: string;
-  clerkId: string;
-  totalPrice: number;
-  currencyCode: string;
-  amountDiscount: number;
-  orderStatusId: number;
-  orderDate: string;
-  trackingNumber: string;
-  deliveryDate: string;
-  shippingAddressId: number;
-  street: string;
-  city: string;
-  provinceId: number | null;
-  provinceName: string | null;
-  stateId: number | null;
-  stateName: string | null;
-  postalCode: string;
-  countryId: number;
-  countryName: string;
+  ordernumber: string;
+  clerk_id: string;
+  totalprice: number;
+  currency_code: string;
+  amountdiscount: number;
+  order_status_id: number;
+  orderdate: string;
+  trackingnumber: string;
+  delivery_date: string;
+  shipping_address: {
+    street: string;
+    city: string;
+    province: string | null;
+    state: string | null;
+    country: string;
+    postal_code: string;
+  };
+  products: Array<{
+    product_id: number;
+    quantity: number;
+    unit_price: number;
+  }>;
 };

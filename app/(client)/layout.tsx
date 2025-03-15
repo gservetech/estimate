@@ -27,7 +27,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { user, orders } = await getUserOrders();
-  console.log(user);
 
   return (
     <ClerkProvider>

@@ -5,6 +5,9 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
+import useOrderStore from "@/store/orderStore";
+import useCartStore from "@/store";
+import { getClientOrders } from "@/lib/getClientOrders";
 
 interface PayPalButtonProps {
   amount: string;
@@ -15,6 +18,8 @@ export function PayPalButton({ amount }: PayPalButtonProps) {
   const [message, setMessage] = useState<string>("");
   const router = useRouter();
   const { userId } = useAuth();
+  const { setOrders } = useOrderStore();
+  const { resetCart } = useCartStore();
 
   const createOrder = async (): Promise<string> => {
     if (!userId) {
@@ -65,6 +70,24 @@ export function PayPalButton({ amount }: PayPalButtonProps) {
       }
 
       if (captureData.status === "COMPLETED") {
+        // After successful payment, fetch the updated orders list
+        if (userId) {
+          try {
+            const { orders, error } = await getClientOrders(userId);
+            if (!error && orders.length > 0) {
+              // Update the orders in the store
+              setOrders(orders);
+            } else if (error) {
+              console.error("Error fetching updated orders:", error);
+            }
+          } catch (error) {
+            console.error("Error fetching updated orders:", error);
+          }
+        }
+
+        // Reset the cart after successful order
+        resetCart();
+
         router.push(`/success?orderId=${data.orderID}`);
         toast.success("Payment successful");
       }

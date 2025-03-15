@@ -3,6 +3,7 @@
 import logo from "@/images/logo.png";
 import { Order } from "@/types/order.types";
 import { User } from "@/types/user.types";
+import useOrderStore from "@/store/orderStore";
 import {
   ClerkLoaded,
   SignedIn,
@@ -25,10 +26,21 @@ interface HeaderProps {
   orders: Order[];
 }
 
-const Header: React.FC<HeaderProps> = ({ orders }) => {
+const Header: React.FC<HeaderProps> = ({ orders: initialOrders }) => {
   const [country, setCountry] = useState<string>("CA");
   const [currency, setCurrency] = useState<string>("CAD");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [isClient, setIsClient] = useState(false);
+  const { setOrders, getOrdersCount } = useOrderStore();
+
+  useEffect(() => {
+    setIsClient(true);
+    // Initialize the order store with the server-provided orders
+    // Only set orders if they don't already exist in the store or if the count has changed
+    if (initialOrders && initialOrders.length > 0) {
+      setOrders(initialOrders);
+    }
+  }, [initialOrders, setOrders]);
 
   useEffect(() => {
     const fetchAndStoreVisit = async () => {
@@ -61,6 +73,9 @@ const Header: React.FC<HeaderProps> = ({ orders }) => {
 
     fetchAndStoreVisit();
   }, []);
+
+  // Get the order count from the store if on client, otherwise use the initial orders
+  const orderCount = isClient ? getOrdersCount() : initialOrders?.length ?? 0;
 
   return (
     <>
@@ -203,7 +218,7 @@ const Header: React.FC<HeaderProps> = ({ orders }) => {
                 >
                   <BsBasket className="w-5 h-5 text-darkBlue" />
                   <p className="hidden lg:block text-sm font-semibold">
-                    {orders.length ?? 0} items
+                    {orderCount} items
                   </p>
                 </Link>
               </SignedIn>

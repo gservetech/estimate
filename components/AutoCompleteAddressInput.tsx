@@ -22,14 +22,6 @@ interface AutoCompleteAddressInputProps {
   >;
 }
 
-interface Address {
-  postcode: string;
-  place: string;
-  district: string;
-  region: string;
-  country: string;
-}
-
 const AutoCompleteAddressInput = ({
   address,
   setDestination,
@@ -78,35 +70,125 @@ const AutoCompleteAddressInput = ({
   }, []);
 
   const handleInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const suggestions = await fetch(`/api/getPlaces?query=${e.target.value}`);
-    const data = await suggestions.json();
-    if (data) {
-      setSuggestions(data.data.features);
+    try {
+      // Only make the API call if there's a value to search for
+      if (!e.target.value.trim()) {
+        setSuggestions([]);
+        return;
+      }
+
+      const response = await fetch(
+        `/api/getPlaces?query=${encodeURIComponent(e.target.value)}`
+      );
+
+      if (!response.ok) {
+        console.error(`API error: ${response.status} ${response.statusText}`);
+        return;
+      }
+
+      const data = await response.json();
+
+      // Check if data and data.data and data.data.features exist before using them
+      if (data && data.data && Array.isArray(data.data.features)) {
+        setSuggestions(data.data.features);
+      } else {
+        console.warn("Invalid response format from API:", data);
+        setSuggestions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching address suggestions:", error);
+      setSuggestions([]);
     }
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     handleAddressManualChange(e);
-    handleInputChange(e).then((r) => r);
+    handleInputChange(e).then(() => {});
   };
 
   const handleSuggestionClick = (suggestion: MapboxFeature) => {
-    console.log(suggestion);
+    console.log("Selected suggestion:", suggestion);
 
+    // Extract street address from the place_name
     const streetAndNumber = suggestion.place_name.split(",")[0];
 
-    const address: Address = suggestion.context.reduce((acc, context) => {
-      const identifier = context.id.split(".")[0] as keyof Address;
-      acc[identifier] = context.text;
-      return acc;
-    }, {} as Address);
+    // Initialize address object
+    const addressComponents = {
+      postcode: "",
+      place: "",
+      region: "",
+      country: "",
+    };
 
-    setDestination({
-      address: streetAndNumber,
-      city: address.place,
-      state: address.region,
-      postalCode: address.postcode,
+    // Extract address components from context
+    if (suggestion.context && Array.isArray(suggestion.context)) {
+      suggestion.context.forEach((context) => {
+        const idParts = context.id.split(".");
+        if (idParts.length > 0) {
+          const type = idParts[0];
+          if (type === "postcode") {
+            addressComponents.postcode = context.text;
+          } else if (type === "place") {
+            addressComponents.place = context.text;
+          } else if (type === "region") {
+            addressComponents.region = context.text;
+          } else if (type === "country") {
+            addressComponents.country = context.text;
+          }
+        }
+      });
+    }
+
+    // If place (city) is not found in context, try to extract it from place_name
+    if (!addressComponents.place) {
+      const placeNameParts = suggestion.place_name.split(",");
+      if (placeNameParts.length > 1) {
+        // The city is usually the second part in the place_name
+        addressComponents.place = placeNameParts[1].trim();
+      }
+    }
+
+    // Ensure we have a city
+    if (!addressComponents.place && suggestion.place_name.includes(",")) {
+      // Try harder to extract city from place_name
+      const parts = suggestion.place_name.split(",").map((part) => part.trim());
+      if (parts.length >= 2) {
+        addressComponents.place = parts[1]; // Second part is usually the city
+      }
+    }
+
+    console.log("Extracted address components:", {
+      street: streetAndNumber,
+      city: addressComponents.place,
+      state: addressComponents.region,
+      postalCode: addressComponents.postcode,
     });
+
+    // Create the full address object
+    const extractedAddress = {
+      address: streetAndNumber,
+      city: addressComponents.place,
+      state: addressComponents.region,
+      postalCode: addressComponents.postcode,
+    };
+
+    // First set the state to ensure cities are loaded
+    if (addressComponents.region) {
+      setDestination((prev) => ({
+        ...prev,
+        state: addressComponents.region,
+      }));
+
+      // Then set the full address with a small delay to ensure the cities list is updated
+      setTimeout(() => {
+        setDestination(extractedAddress);
+        console.log("Setting destination with delay:", extractedAddress);
+      }, 200);
+    } else {
+      // If no region/state, just set the address directly
+      setDestination(extractedAddress);
+      console.log("Setting destination directly:", extractedAddress);
+    }
 
     setSuggestions([]);
   };

@@ -83,6 +83,54 @@ const CartPage = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (destination.state) {
+      // Fetch cities for the selected state/province
+      const isCanada = country === "CA";
+      const filteredCities = citiesByState.filter((city) => {
+        if (isCanada) {
+          return (
+            city.province?.province_name === destination.state &&
+            city.country?.id === 2
+          );
+        } else {
+          return (
+            city.state?.state_name === destination.state &&
+            city.country?.id === 1
+          );
+        }
+      });
+
+      // Set the filtered cities
+      setCities(filteredCities);
+      console.log("Set filtered cities:", filteredCities);
+    }
+  }, [destination.state, country]);
+
+  // Add this useEffect for debugging
+  useEffect(() => {
+    if (isClient) {
+      console.log("Current destination:", destination);
+      console.log("Current cities list:", cities);
+
+      // If we have a city from autocomplete but it's not selected in the dropdown,
+      // force select it by updating the destination
+      if (
+        destination.city &&
+        cities.length > 0 &&
+        !cities.some((city) => city.city_name === destination.city)
+      ) {
+        console.log(
+          "City from autocomplete not in dropdown, forcing selection"
+        );
+
+        // Force update to trigger re-render
+        setDestination((prev) => ({ ...prev }));
+      }
+    }
+  }, [destination, cities, isClient]);
+
   if (!isClient) {
     return <Loader />;
   }
@@ -276,29 +324,41 @@ const CartPage = () => {
 
                           <div>
                             <p className="text-sm">City</p>
-                            <Select
-                              value={destination.city}
-                              onValueChange={(value) => {
-                                setDestination((prev) => ({
-                                  ...prev,
-                                  city: value,
-                                }));
-                              }}
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select City" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {cities.map((city) => (
-                                  <SelectItem
-                                    key={city.id}
-                                    value={city.city_name}
-                                  >
-                                    {city.city_name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            {destination.city &&
+                            !cities.some(
+                              (city) => city.city_name === destination.city
+                            ) ? (
+                              <input
+                                type="text"
+                                value={destination.city}
+                                disabled
+                                className="border rounded-md px-3 w-full py-2 bg-gray-100"
+                              />
+                            ) : (
+                              <Select
+                                value={destination.city || ""}
+                                onValueChange={(value) => {
+                                  setDestination((prev) => ({
+                                    ...prev,
+                                    city: value,
+                                  }));
+                                }}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select City" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {cities.map((city) => (
+                                    <SelectItem
+                                      key={city.id}
+                                      value={city.city_name}
+                                    >
+                                      {city.city_name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            )}
                           </div>
                           <div>
                             <p className="text-sm">

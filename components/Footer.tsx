@@ -25,7 +25,7 @@ const Footer = () => {
             <div className="grid grid-cols-1 lg:grid-cols-7 gap-5  lg:gap-28 padd-y-80 bottom_border border_gray justify-content-between">
               <div className=" lg:col-span-2 pb-3 pb-lg-3 newsletter-form">
                 <h4 className="txt_white">
-                  Enter your email address to get $20 off your first order
+                  Enter your email address
                 </h4>
                 <div className="pay_form">
                   <form
@@ -57,7 +57,7 @@ const Footer = () => {
                   <ul className=" flex flex-col gap-1">
                     <li>
                       <a
-                        href="template/about-us.html"
+                        href="/about"
                         className="fw_400 h6 txt_footer txt_hover"
                       >
                         About us
@@ -65,7 +65,7 @@ const Footer = () => {
                     </li>
                     <li>
                       <a
-                        href="template/contact-us.html"
+                        href="/contact"
                         className="fw_400 h6 txt_footer txt_hover"
                       >
                         Contact us
@@ -73,7 +73,7 @@ const Footer = () => {
                     </li>
                     <li>
                       <a
-                        href="/template/terms-and-conditions.html"
+                        href="terms-and-conditions.html"
                         className="fw_400 h6 txt_footer txt_hover"
                       >
                         Privacy Policy
@@ -81,7 +81,7 @@ const Footer = () => {
                     </li>
                     <li>
                       <a
-                        href="/template/terms-and-conditions.html"
+                        href="terms-and-conditions.html"
                         className="fw_400 h6 txt_footer txt_hover"
                       >
                         Terms & Condition
@@ -89,7 +89,7 @@ const Footer = () => {
                     </li>
                     <li>
                       <a
-                        href="/template/terms-and-conditions.html"
+                        href="terms-and-conditions.html"
                         className="fw_400 h6 txt_footer txt_hover"
                       >
                         24/7 Support

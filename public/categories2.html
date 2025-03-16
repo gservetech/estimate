@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Retail Store Categories</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+      }
+      .category-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        justify-content: center;
+        width: 100%;
+      }
+      .category {
+        background-color: #fff;
+        border-radius: 7px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 10px 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        :center ;
+      }
+      .category:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      }
+      .text {
+        font-family: Roboto, Arial, sans-serif;
+        line-height: 1rem;
+        font-size: 0.75rem;
+        letter-spacing: 0.025em;
+        font-weight: 400;
+        color: rgb(32, 33, 36);
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="category-container">
+      <div class="category"><div class="text">Grocery Stores</div></div>
+      <div class="category"><div class="text">Clothing Stores</div></div>
+      <div class="category"><div class="text">Electronics Stores</div></div>
+      <div class="category">
+        <div class="text">Home Improvement Stores</div>
+      </div>
+      <div class="category"><div class="text">Pharmacies</div></div>
+      <div class="category"><div class="text">Department Stores</div></div>
+      <div class="category"><div class="text">Specialty Stores</div></div>
+      <div class="category"><div class="text">Furniture Stores</div></div>
+      <div class="category"><div class="text">Sporting Goods Stores</div></div>
+      <div class="category"><div class="text">Discount Stores</div></div>
+      <div class="category"><div class="text">Automotive Stores</div></div>
+      <div class="category"><div class="text">Bookstores</div></div>
+      <div class="category"><div class="text">Toy Stores</div></div>
+      <div class="category"><div class="text">Jewelry Stores</div></div>
+      <div class="category"><div class="text">Office Supply Stores</div></div>
+      <div class="category"><div class="text">Pet Stores</div></div>
+      <div class="category"><div class="text">Beauty Stores</div></div>
+      <div class="category"><div class="text">Gourmet Food Stores</div></div>
+      <div class="category"><div class="text">Convenience Stores</div></div>
+      <div class="category"><div class="text">Thrift Stores</div></div>
+    </div>
+  </body>
+</html>

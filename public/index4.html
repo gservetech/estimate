@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta content="width=device-width, intial-scale=1.0" name="viewport" />
+    <title>Home</title>
+    <link href="Images/favicon.png" rel="icon" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css"
+      rel="stylesheet"
+    />
+    <link
+      crossorigin="anonymous"
+      href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css"
+      referrerpolicy="no-referrer"
+      rel="stylesheet"
+    />
+    <link href="css/style.css" rel="stylesheet" />
+    <link href="css/responsive.css" rel="stylesheet" />
+    <link href="css/materialdesignicons.min.css" rel="stylesheet" />
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var isMobile = /mobile/i.test(navigator.userAgent);
+        if (isMobile) {
+          var viewport = document.querySelector('meta[name="viewport"]');
+          viewport.setAttribute("content", "width=1024");
+        }
+      });
+    </script>
+    <style>
+      .category-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        justify-content: center;
+        width: 100%;
+        padding: 10px 15px;
+      }
+      .category {
+        background-color: #fff;
+        border-radius: 7px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 10px 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        :center ;
+      }
+      .category:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      }
+      .text {
+        font-family: Roboto, Arial, sans-serif;
+        line-height: 1rem;
+        font-size: 0.75rem;
+        letter-spacing: 0.025em;
+        font-weight: 400;
+        color: rgb(32, 33, 36);
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .custom-align-right {
+        display: flex;
+        justify-content: flex-end;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var isMobile = /mobile/i.test(navigator.userAgent);
+        if (isMobile) {
+          var viewport = document.querySelector('meta[name="viewport"]');
+          viewport.setAttribute("content", "width=1024");
+        }
+      });
+
+      function determineCurrency() {
+        fetch("https://ipapi.co/json/")
+          .then((response) => response.json())
+          .then((data) => {
+            var country = data.country;
+            var currency;
+
+            if (country === "CA") {
+              currency = "CAD";
+            } else if (country === "US") {
+              currency = "USD";
+            } else {
+              currency = "USD"; // Default currency
+            }
+
+            const dropdownButton = document.getElementById(
+              "dropdownMenuButton2"
+            );
+            if (dropdownButton) {
+              dropdownButton.innerHTML = `<span class="txt_white fw_400 mb-0 d-flex align-items-center justify-content-center">$ ${currency} <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ms-2 feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg></span>`;
+            } else {
+              console.error('Element with id "dropdownMenuButton2" not found.');
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching IP location:", error);
+            alert("Unable to determine location.");
+          });
+      }
+
+      function changeCurrency(currency) {
+        const dropdownButton = document.getElementById("dropdownMenuButton2");
+        if (dropdownButton) {
+          dropdownButton.innerHTML = `<span class="txt_white fw_400 mb-0 d-flex align-items-center justify-content-center">$ ${currency} <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ms-2 feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg></span>`;
+        } else {
+          console.error('Element with id "dropdownMenuButton2" not found.');
+        }
+      }
+
+      function changeFlag(country) {
+        const flagIcon = document.getElementById("flag-icon");
+        if (!flagIcon) {
+          console.error('Element with id "flag-icon" not found.');
+          return;
+        }
+
+        let flagSrc = "";
+        let flagAlt = "";
+        let flagText = "";
+
+        if (country === "us") {
+          flagSrc = "Images/USFlag.png";
+          flagAlt = "US Flag";
+          flagText = " US";
+        } else if (country === "canada") {
+          flagSrc = "Images/canadaFlag.png";
+          flagAlt = "Canada Flag";
+          flagText = " Canada";
+        } else {
+          console.error("Invalid country code.");
+          return;
+        }
+
+        flagIcon.src = flagSrc;
+        flagIcon.alt = flagAlt;
+
+        const nextSibling = flagIcon.nextSibling;
+        if (nextSibling && nextSibling.nodeType === Node.TEXT_NODE) {
+          nextSibling.textContent = flagText;
+        } else if (nextSibling) {
+          nextSibling.textContent = flagText;
+        } else {
+          console.error("Next sibling not found or not a text node.");
+        }
+      }
+
+      // Call the function to set the currency on page load
+      window.onload = determineCurrency;
+    </script>
+    <style>
+      .cls-1 {
+        fill: #263c97;
+        fill-rule: evenodd;
+      }
+    </style>
+    <style type="text/css">
+      .st0 {
+        fill: #ffc000;
+      }
+      .st1 {
+        clip-path: url(#SVGID_2_);
+        fill: #ffdd09;
+      }
+      .st2 {
+        clip-path: url(#SVGID_2_);
+        fill: #0e224d;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="alloader"></div>
+    <header class="header_section bg_dark_blue">
+      <div class="border_blue_bottom middel_header-section">
+        <div class="container middel_header">
+          <div class="col-sm-6 col-xl-4 col-12 custom-align-right">
+            <div class="col-sm-6 col-xl-4 d-none d-xl-block">
+                <div class="middel_header_inner-1 d-flex align-items-center">
+                    
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-4 d-none d-sm-block">
+                <div class="middel_header_inner-2">
+                    
+                </div>
+            </div>
+            <div
+              class="middel_header_inner-3 d-flex align-items-center"
+              style="border: 10px solid black"
+            >
+              <a class="middel_header_btn border_blue_right" href="faq.html">
+                <h6
+                  class="txt_white fw_400 mb-0 d-flex align-items-center justify-content-center txt_hover"
+                >
+                  About us
+                </h6></a
+              >
+              <div class="dropdown language-block">
+                <button
+                  aria-expanded="false"
+                  class="btn dropdown-toggle middel_header_btn border_blue_right"
+                  data-bs-toggle="dropdown"
+                  id="dropdownMenuButton1"
+                  type="button"
+                >
+                  <span
+                    class="txt_white fw_400 mb-0 d-flex align-items-center justify-content-center"
+                  >
+                    <img
+                      alt="Canada Flag"
+                      class="me-2"
+                      height="17px"
+                      id="flag-icon"
+                      src="Images/canadaFlag.png"
+                      width="17px"
+                    />
+                    Canada
+                    <svg
+                      class="ms-2 feather feather-chevron-down"
+                      fill="none"
+                      height="12"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewbox="0 0 24 24"
+                      width="12"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </button>
+                <ul
+                  aria-labelledby="dropdownMenuButton1"
+                  class="py-3 dropdown-menu dropdown-menu-end border-0 box-shadow"
+                >
+                  <li class="w-100">
+                    <a
+                      class="dropdown-item txt_blue"
+                      href="#"
+                      onclick="changeFlag('us')"
+                      >US</a
+                    >
+                  </li>
+                  <li class="w-100">
+                    <a
+                      class="dropdown-item txt_blue"
+                      href="#"
+                      onclick="changeFlag('canada')"
+                      >Canada</a
+                    >
+                  </li>
+                </ul>
+              </div>
+              <div class="dropdown currency-block">
+                <button
+                  aria-expanded="false"
+                  class="btn dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  id="dropdownMenuButton2"
+                  type="button"
+                >
+                  <span
+                    class="txt_white fw_400 mb-0 d-flex align-items-center justify-content-center"
+                  >
+                    $ CAD
+                    <svg
+                      class="ms-2 feather feather-chevron-down"
+                      fill="none"
+                      height="12"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewbox="0 0 24 24"
+                      width="12"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </button>
+                <ul
+                  aria-labelledby="dropdownMenuButton2"
+                  class="py-3 dropdown-menu dropdown-menu-end border-0 box-shadow"
+                >
+                  <li class="w-100">
+                    <a
+                      class="dropdown-item txt_blue"
+                      href="#"
+                      onclick="changeCurrency('USD')"
+                      >USD</a
+                    >
+                  </li>
+                  <li class="w-100">
+                    <a
+                      class="dropdown-item txt_blue"
+                      href="#"
+                      onclick="changeCurrency('CAD')"
+                      >CAD</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="border_blue_bottom second_header_outer">
+        <div class="container second_header">
+          <div class="magic_mart">
+            <div class="row py-md-3 align-items-center py-2">
+              <div
+                class="col-5 order-1 order-lg-1 order-md-1 col-lg-2 col-xl-2 col-xxl-2 col-md-3"
+              >
+                <a class="magic_mart_logo" href="#"
+                  ><img
+                    alt="logo"
+                    class="img-fluid"
+                    height="10"
+                    src="Images/logo2.jpg"
+                    width="200"
+                /></a>
+              </div>
+              <div
+                class="col-12 order-3 order-lg-2 order-md-2 col-lg-6 col-xl-5 col-xxl-4 mt-lg-0 col-md-6 d-none d-lg-block"
+              >
+                <div>
+                  <form
+                    class="search_for_item_outer d-flex position-relative ms-2"
+                  >
+                    <input
+                      aria-label="Search"
+                      class="shadow-none form-control border_radius bg_light_blue"
+                      placeholder="Search for items"
+                      type="search"
+                    />
+                    <button
+                      class="btn search_for_item_btn position-absolute"
+                      type="submit"
+                    >
+                      <svg
+                        class="txt_black feather feather-search"
+                        fill="none"
+                        height="23"
+                        stroke="currentcolor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewbox="0 0 24 24"
+                        width="23"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+                      </svg>
+                    </button>
+                  </form>
+                </div>
+              </div>
+              <div
+                class="col-7 order-2 order-lg-3 order-md-3 col-lg-4 col-xl-5 col-xxl-6 col-md-9 d-flex align-items-center justify-content-end"
+              >
+                <div class="mm_profile_icon d-flex align-items-center">
+                  <a
+                    class="d-none d-xl-block contact d-xl-flex align-items-center border_blue_right"
+                    href="tel:+96574924277"
+                    ><svg
+                      height="30px"
+                      width="30px"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                    >
+                      <path
+                        d="M26.61,20.949 L26.61,24.572 C26.63,24.908 25.994,25.241 25.859,25.549 C25.724,25.857 25.527,26.134 25.279,26.361 C25.31,26.588 24.739,26.762 24.420,26.869 C24.101,26.977 23.764,27.17 23.429,26.987 C19.713,26.583 16.144,25.313 13.8,23.280 C10.91,21.426 7.617,18.952 5.763,16.34 C3.723,12.885 2.453,9.298 2.56,5.566 C2.26,5.232 2.66,4.895 2.173,4.578 C2.280,4.260 2.452,3.968 2.678,3.720 C2.904,3.473 3.179,3.275 3.486,3.139 C3.792,3.3 4.124,2.934 4.459,2.933 L8.82,2.933 C8.668,2.927 9.236,3.135 9.680,3.517 C10.124,3.900 10.415,4.430 10.497,5.10 C10.650,6.170 10.933,7.308 11.342,8.403 C11.504,8.836 11.540,9.306 11.443,9.757 C11.347,10.208 11.123,10.623 10.798,10.951 L9.265,12.485 C10.984,15.507 13.487,18.11 16.510,19.730 L18.44,18.196 C18.372,17.872 18.786,17.647 19.238,17.552 C19.689,17.455 20.159,17.490 20.591,17.652 C21.687,18.62 22.825,18.345 23.984,18.498 C24.571,18.581 25.107,18.876 25.490,19.328 C25.873,19.780 26.76,20.357 26.61,20.949 Z"
+                        fill="none"
+                        fill-rule="evenodd"
+                        stroke="rgb(255, 255, 255)"
+                        stroke-linecap="butt"
+                        stroke-linejoin="miter"
+                        stroke-width="2px"
+                      ></path>
+                    </svg>
+                    <div class="need-help ms-2 px-1 me-4">
+                      <span class="h7 fw_400 text-uppercase txt_yellow mb-0"
+                        >Need help?</span
+                      >
+                      <h6 class="fw_500 mb-0 txt_hover txt_white">
+                        (416) 635-0502
+                      </h6>
+                    </div></a
+                  >
+                  <a
+                    class="profile d-flex align-items-center ms-2 ms-xl-4 ps-1"
+                    href="login.html"
+                    ><svg
+                      height="28px"
+                      width="28px"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                    >
+                      <path
+                        d="M25.854,29.199 L25.854,26.179 C25.854,24.576 25.226,23.40 24.108,21.907 C22.990,20.774 21.474,20.137 19.893,20.137 L7.972,20.137 C6.391,20.137 4.875,20.774 3.757,21.907 C2.640,23.40 2.12,24.576 2.12,26.179 L2.12,29.199"
+                        fill="none"
+                        fill-rule="evenodd"
+                        stroke="rgb(255, 255, 255)"
+                        stroke-linecap="butt"
+                        stroke-linejoin="miter"
+                        stroke-width="2px"
+                      ></path>
+                      <path
+                        d="M19.893,8.54 C19.893,11.391 17.224,14.96 13.933,14.96 C10.641,14.96 7.972,11.391 7.972,8.54 C7.972,4.718 10.641,2.13 13.933,2.13 C17.224,2.13 19.893,4.718 19.893,8.54 Z"
+                        fill="none"
+                        fill-rule="evenodd"
+                        stroke="rgb(255, 255, 255)"
+                        stroke-linecap="butt"
+                        stroke-linejoin="miter"
+                        stroke-width="2px"
+                      ></path>
+                    </svg>
+                    <div class="ms-2 ps-1 txt_white d-none d-xl-block">
+                      <span class="h7 fw_400 text-uppercase txt_yellow mb-0"
+                        >Account</span
+                      >
+                      <h6 class="fw_500 mb-0 txt_hover">Login/Sign up</h6>
+                    </div></a
+                  >
+                  <a
+                    class="js-menu__open cart position-relative d-flex align-items-center ms-2 ms-xl-4 ps-1"
+                    data-menu="#main-nav"
+                    href="javascript:void(0);"
+                    ><svg
+                      height="32px"
+                      width="32px"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                    >
+                      <path
+                        d="M12.462,26.955 C12.462,27.621 11.922,28.160 11.256,28.160 C10.590,28.160 10.50,27.621 10.50,26.955 C10.50,26.288 10.590,25.749 11.256,25.749 C11.922,25.749 12.462,26.288 12.462,26.955 Z"
+                        fill="none"
+                        fill-rule="evenodd"
+                        stroke="rgb(255, 255, 255)"
+                        stroke-linecap="butt"
+                        stroke-linejoin="miter"
+                        stroke-width="2px"
+                      ></path>
+                      <path
+                        d="M25.727,26.955 C25.727,27.621 25.187,28.160 24.521,28.160 C23.855,28.160 23.315,27.621 23.315,26.955 C23.315,26.288 23.855,25.749 24.521,25.749 C25.187,25.749 25.727,26.288 25.727,26.955 Z"
+                        fill="none"
+                        fill-rule="evenodd"
+                        stroke="rgb(255, 255, 255)"
+                        stroke-linecap="butt"
+                        stroke-linejoin="miter"
+                        stroke-width="2px"
+                      ></path>
+                      <path
+                        d="M1.609,2.837 L6.433,2.837 L9.664,18.984 C9.775,19.539 10.77,20.38 10.518,20.393 C10.958,20.748 11.510,20.936 12.76,20.925 L23.798,20.925 C24.363,20.936 24.915,20.748 25.356,20.393 C25.797,20.38 26.99,19.539 26.209,18.984 L28.139,8.866 L7.638,8.866"
+                        fill="none"
+                        fill-rule="evenodd"
+                        stroke="rgb(255, 255, 255)"
+                        stroke-linecap="butt"
+                        stroke-linejoin="miter"
+                        stroke-width="2px"
+                      ></path>
+                    </svg>
+                    <span class="cart_count position-absolute bg_yellow txt_bl"
+                      >2</span
+                    >
+                    <div class="ms-2 ps-1 txt_white d-none d-md-block">
+                      <span class="h7 fw_400 text-uppercase txt_yellow mb-0"
+                        >Cart</span
+                      >
+                      <h6 class="fw_500 mb-0">$199.98</h6>
+                    </div></a
+                  >
+                  <div class="js-menu__context">
+                    <div class="js-menu-cart js-menu--right" id="main-nav">
+                      <div
+                        class="p-3 mb-3 cart__inner-head d-flex align-items-center justify-content-between bottom_border"
+                      >
+                        <h5 class="cart__inner-title fw_700 txt_blue m-0">
+                          This is your bag
+                        </h5>
+                        <span class="js-menu__close">✕</span>
+                      </div>
+                      <div class="pt-2 cart-inner-form">
+                        <div class="cart-dropdown px-3">
+                          <ul class="list-unstyled pt-0">
+                            <li class="bottom_border pb-3 mb-3">
+                              <div class="">
+                                <ul class="list-unstyled row mx-n2">
+                                  <li class="col-auto w-25">
+                                    <img
+                                      alt="product-image"
+                                      class="border_solid border_radius img-fluid"
+                                      src="./Images/Product/06.jpg"
+                                    />
+                                  </li>
+                                  <li class="col">
+                                    <a href="single-product.html">
+                                      <h6 class="fw_500 txt_blue lh-base">
+                                        Defunc True Basic TWS Earbuds
+                                      </h6></a
+                                    >
+                                    <span class="fw_700 txt_blue mb-0 h6"
+                                      >1 × $99.99.00</span
+                                    >
+                                  </li>
+                                  <li class="col-auto">
+                                    <a class="text-gray-90" href="#"></a>
+                                  </li>
+                                </ul>
+                              </div>
+                            </li>
+                            <li class="bottom_border pb-3 mb-3">
+                              <div class="">
+                                <ul class="list-unstyled row mx-n2">
+                                  <li class="col-auto w-25">
+                                    <img
+                                      alt="product-image"
+                                      class="border_solid border_radius img-fluid"
+                                      src="./Images/Product/07.jpg"
+                                    />
+                                  </li>
+                                  <li class="col">
+                                    <a href="single-product.html">
+                                      <h6 class="fw_500 txt_blue lh-base">
+                                        Headphones Bluetooth Style 3 Stone
+                                      </h6></a
+                                    >
+                                    <span class="fw_700 txt_blue mb-0 h6"
+                                      >1 × $99.99.00</span
+                                    >
+                                  </li>
+                                  <li class="col-auto">
+                                    <a class="text-gray-90" href="#"></a>
+                                  </li>
+                                </ul>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                        <div
+                          class="cart__inner-foot flex-center-between bg_light_blue"
+                        >
+                          <h3
+                            class="d-flex align-items-center justify-content-between mb-4"
+                          >
+                            <span>Subtotal</span> <span>$199.98</span>
+                          </h3>
+                          <a
+                            class="bg_dark_blue txt_white border_radius w-100 text-center p-3 ctm-btn"
+                            href="checkout.html"
+                            >Checkout</a
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="category-container">
+        <div class="category">
+          <div class="text">Grocery Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Clothing Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Electronics Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Home Improvement Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Pharmacies</div>
+        </div>
+        <div class="category">
+          <div class="text">Department Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Specialty Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Furniture Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Sporting Goods Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Discount Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Automotive Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Bookstores</div>
+        </div>
+        <div class="category">
+          <div class="text">Toy Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Jewelry Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Office Supply Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Pet Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Beauty Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Gourmet Food Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Convenience Stores</div>
+        </div>
+        <div class="category">
+          <div class="text">Thrift Stores</div>
+        </div>
+      </div>
+      <div class="bottom_border third_header_outer d-lg-block">
+        <div class="container third_header my-lg-1">
+          <div
+            class="row align-items-center justify-content-xl-start justify-content-between justify-content-md-between"
+          >
+            <div
+              class="col-2 col-lg-2 col-xl-3 col-xxl-2 col-sm-3 mt-0 mt-lg-0 mt-sm-0"
+            >
+              <div class="shop_cat_btn txt_white dropdown position-relative">
+                <a
+                  aria-expanded="false"
+                  class="shop_cat_toggle btn ps-0 p-3 align-items-center justify-content-between border_radius dropdown-toggle"
+                  data-bs-auto-close="outside"
+                  data-bs-toggle="dropdown"
+                  id="dropdownMenuClickableInside"
+                  role="button"
+                >
+                  <h6 class="txt_white fw_500 mb-0 d-flex align-items-center">
+                    <svg
+                      class="feather feather-menu me-0 me-md-3"
+                      fill="#FFFFFF"
+                      height="20"
+                      stroke="currentcolor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewbox="0 0 24 24"
+                      width="20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <line x1="3" x2="21" y1="12" y2="12"></line>
+                      <line x1="3" x2="21" y1="6" y2="6"></line>
+                      <line x1="3" x2="21" y1="18" y2="18"></line></svg
+                    ><span class="d-md-block d-none">Shop By Categories</span>
+                  </h6>
+                  <svg
+                    class="d-none d-lg-block position-absolute feather txt_white feather-chevrons-down"
+                    fill="none"
+                    height="18"
+                    stroke="currentcolor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewbox="0 0 24 24"
+                    width="18"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <polyline points="7 13 12 18 17 13"></polyline>
+                    <polyline points="7 6 12 11 17 6"></polyline></svg
+                ></a>
+                <ul
+                  aria-labelledby="dropdownMenuClickableInside"
+                  class="p-0 dropdown-menu navbar__menu border-0 box-shadow"
+                >
+                  <li class="has-mega-menu">
+                    <a
+                      class="dropdown-item txt_blue d-flex align-items-center justify-content-between"
+                      href="#"
+                      >Electronics</a
+                    >
+                    <div
+                      class="mega-menu-inner ctm-width box-shadow border_radius"
+                    >
+                      <div class="menu-menu-bgimage d-none d-lg-block">
+                        <img
+                          alt="Image Description"
+                          class="d"
+                          src="./Images/img1.png"
+                        />
+                      </div>
+                      <div
+                        class="row row-cols-2 header__mega-menu-wrapper p-3 p-lg-5"
+                      >
+                        <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                          <h6
+                            class="txt_blue fw_600 header__sub-menu-title mb-3"
+                          >
+                            Laptop &amp; Desktop
+                          </h6>
+                          <ul class="u-header__sub-menu-nav-group">
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Laptop</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Gaming Laptop</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >All In One PCs</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Mini PCs</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Tower PCs</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >PC Finder</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                          <h6
+                            class="txt_blue fw_600 header__sub-menu-title mb-3"
+                          >
+                            Health &amp; Personal Care
+                          </h6>
+                          <ul class="u-header__sub-menu-nav-group">
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Trimmers</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Hair Dryers</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="has-mega-menu">
+                    <a
+                      class="dropdown-item txt_blue d-flex align-items-center justify-content-between"
+                      href="#"
+                      >Kitchen Appliances</a
+                    >
+                    <div
+                      class="mega-menu-inner ctm-width box-shadow border_radius"
+                    >
+                      <div class="menu-menu-bgimage d-none d-lg-block">
+                        <img
+                          alt="Image Description"
+                          class="img-fluid"
+                          src="./Images/img2.png"
+                        />
+                      </div>
+                      <div
+                        class="row row-cols-2 header__mega-menu-wrapper p-3 p-lg-5"
+                      >
+                        <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                          <h6
+                            class="txt_blue fw_600 header__sub-menu-title mb-3"
+                          >
+                            Kitchen &amp; Dining
+                          </h6>
+                          <ul class="u-header__sub-menu-nav-group">
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Cookwear</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Lunchboxes, Bottles &amp; Flasks</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Kitchen tools</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Barware</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Bakeware</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Outdoor cooking</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                          <h6
+                            class="txt_blue fw_600 header__sub-menu-title mb-3"
+                          >
+                            More Kitchen Appliances
+                          </h6>
+                          <ul class="u-header__sub-menu-nav-group">
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Handjuicers &amp; Grinders</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Gas Stoves &amp; Accessories</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="has-mega-menu">
+                    <a
+                      class="dropdown-item txt_blue d-flex align-items-center justify-content-between"
+                      href="#"
+                      >Fashion</a
+                    >
+                    <div
+                      class="mega-menu-inner ctm-width box-shadow border_radius"
+                    >
+                      <div class="menu-menu-bgimage d-none d-lg-block">
+                        <img
+                          alt="Image Description"
+                          class="img-fluid"
+                          src="./Images/img3.png"
+                        />
+                      </div>
+                      <div
+                        class="row row-cols-2 header__mega-menu-wrapper p-3 p-lg-5"
+                      >
+                        <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                          <h6
+                            class="txt_blue fw_600 header__sub-menu-title mb-3"
+                          >
+                            Men's Top Wear
+                          </h6>
+                          <ul class="u-header__sub-menu-nav-group">
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Men's T-Shirts</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Men's Formal Shirts</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Men's Kurtas</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Men's Raincoat</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Men's Fabrics</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Men's Ethnic Sets</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                          <h6
+                            class="txt_blue fw_600 header__sub-menu-title mb-3"
+                          >
+                            Women Western
+                          </h6>
+                          <ul class="u-header__sub-menu-nav-group">
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Women Dresses</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Women Jumpsuit</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Women Nightsuit</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="has-mega-menu">
+                    <a
+                      class="dropdown-item txt_blue d-flex align-items-center justify-content-between"
+                      href="#"
+                      >Beauty, Toys &amp; More</a
+                    >
+                    <div
+                      class="mega-menu-inner ctm-width box-shadow border_radius"
+                    >
+                      <div class="menu-menu-bgimage d-none d-lg-block">
+                        <img
+                          alt="Image Description"
+                          class="img-fluid"
+                          src="./Images/img4.png"
+                        />
+                      </div>
+                      <div
+                        class="row row-cols-2 header__mega-menu-wrapper p-3 p-lg-5"
+                      >
+                        <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                          <h6
+                            class="txt_blue fw_600 header__sub-menu-title mb-3"
+                          >
+                            Men's Grooming
+                          </h6>
+                          <ul class="u-header__sub-menu-nav-group">
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Face Washes</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Beard Oils</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Shaving Essentials</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Soaps &amp; Bodywashes</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Hair Styling</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Aftershave</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                          <h6
+                            class="txt_blue fw_600 header__sub-menu-title mb-3"
+                          >
+                            Sports &amp; Fitness
+                          </h6>
+                          <ul class="u-header__sub-menu-nav-group">
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Badminton</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Cricket</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Fitness Equipments</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="has-mega-menu">
+                    <a
+                      class="dropdown-item txt_blue d-flex align-items-center justify-content-between"
+                      href="#"
+                      >Music &amp; Video Games</a
+                    >
+                    <div
+                      class="mega-menu-inner ctm-width box-shadow border_radius"
+                    >
+                      <div class="menu-menu-bgimage d-none d-lg-block">
+                        <img
+                          alt="Image Description"
+                          class="img-fluid"
+                          src="./Images/img5.png"
+                        />
+                      </div>
+                      <div
+                        class="row row-cols-2 header__mega-menu-wrapper p-3 p-lg-5"
+                      >
+                        <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                          <h6
+                            class="txt_blue fw_600 header__sub-menu-title mb-3"
+                          >
+                            Video Games
+                          </h6>
+                          <ul class="u-header__sub-menu-nav-group">
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Gaming Consoles</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Latest Video Games</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Gaming Accessories</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >PC Games</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >All Video Games</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                          <h6
+                            class="txt_blue fw_600 header__sub-menu-title mb-3"
+                          >
+                            Music
+                          </h6>
+                          <ul class="u-header__sub-menu-nav-group">
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Film Songs</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Indian Classical</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="has-mega-menu">
+                    <a
+                      class="dropdown-item txt_blue d-flex align-items-center justify-content-between"
+                      href="#"
+                      >Books</a
+                    >
+                    <div
+                      class="mega-menu-inner ctm-width box-shadow border_radius"
+                    >
+                      <div class="menu-menu-bgimage d-none d-lg-block">
+                        <img
+                          alt="Image Description"
+                          class="img-fluid"
+                          src="./Images/img6.png"
+                        />
+                      </div>
+                      <div
+                        class="row row-cols-2 header__mega-menu-wrapper p-3 p-lg-5"
+                      >
+                        <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                          <h6
+                            class="txt_blue fw_600 header__sub-menu-title mb-3"
+                          >
+                            Books
+                          </h6>
+                          <ul class="u-header__sub-menu-nav-group">
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Fiction Books</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Editor's Corner</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >School Textbooks</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Children's Books</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Kindle eBooks</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                          <h6
+                            class="txt_blue fw_600 header__sub-menu-title mb-3"
+                          >
+                            Audible Audiobooks
+                          </h6>
+                          <ul class="u-header__sub-menu-nav-group">
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Audible Audiobooks &amp; more</a
+                              >
+                            </li>
+                            <li>
+                              <a
+                                class="p-0 mb-2 txt_blue fw_400 h6 u-header__sub-menu-nav-link"
+                                href="#"
+                                >Audible Membership</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <a class="dropdown-item txt_blue" href="#"
+                      >Car &amp; Motorbike</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item txt_blue" href="#">Jewelry</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item txt_blue" href="#"
+                      >Featured Brands</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item txt_blue" href="#">Gifts Cards</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div
+              class="col-10 col-md-9 col-xl-5 col-xxl-4 mt-lg-0 col-lg-6 order-3 order-lg-2 order-md-2 d-lg-none"
+            >
+              <div>
+                <form
+                  class="search_for_item_outer d-flex position-relative ms-2"
+                >
+                  <input
+                    aria-label="Search"
+                    class="shadow-none form-control border_radius bg_light_blue"
+                    placeholder="Search for items"
+                    type="search"
+                  />
+                  <button
+                    class="btn search_for_item_btn position-absolute"
+                    type="submit"
+                  >
+                    <svg
+                      class="txt_black feather feather-search"
+                      fill="none"
+                      height="23"
+                      stroke="currentcolor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewbox="0 0 24 24"
+                      width="23"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+                    </svg>
+                  </button>
+                </form>
+              </div>
+            </div>
+            <div
+              class="col-lg-10 col-4 col-sm-2 col-lg-3 d-none d-lg-block dropdown position-relative"
+            >
+              <nav class="p-0 navbar navbar-expand-lg txt_white">
+                <div
+                  class="collapse navbar-collapse"
+                  id="navbarSupportedContent"
+                >
+                  <ul
+                    class="menu-navigation navbar-nav me-auto mb-2 mb-lg-0 dropdown-menu border-0 box-shadow"
+                  >
+                    <li class="nav-item">
+                      <a
+                        aria-current="page"
+                        class="nav-link text-white text-md-dark fw_500 txt_hover dropdown-item ps-2"
+                        href="index.html"
+                        >Home</a
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link text-white text-md-dark fw_500 txt_hover dropdown-item ps-2"
+                        href="category-listing.html"
+                        >Shop</a
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link text-white text-md-dark fw_500 txt_hover dropdown-item ps-2"
+                        href="category-product.html"
+                        >Women</a
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link text-white text-md-dark fw_500 txt_hover dropdown-item ps-2"
+                        href="category-product.html"
+                        >Men</a
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link text-white text-md-dark fw_500 txt_hover dropdown-item ps-2"
+                        href="blog-listing.html"
+                        >Blog</a
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link text-white text-md-dark fw_500 txt_hover dropdown-item ps-2"
+                        href="about-us.html"
+                        >About Us</a
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link text-white text-md-dark fw_500 txt_hover dropdown-item ps-2"
+                        href="404.html"
+                        >404</a
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link text-white text-md-dark fw_500 txt_hover dropdown-item ps-2"
+                        href="contact-us.html"
+                        >Contact</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+      <footer>
+        <div class="main_footer bg_dark_blue mt-5">
+          <div class="container">
+            <div>
+              <div
+                class="row padd-y-80 bottom_border border_gray justify-content-between"
+              >
+                <div
+                  class="col-12 col-md-12 col-xl-3 pb-3 pb-lg-3 newsletter-form"
+                >
+                  <h4 class="txt_white">
+                    Enter your email address to get $20 off your first order
+                  </h4>
+                  <div class="pay_form">
+                    <form
+                      action="#"
+                      class="my-4 py-2 col-xxl-12 col-lg-7 col-md-7"
+                    >
+                      <div class="d-flex align-items-center position-relative">
+                        <input placeholder="Email Address" type="email" />
+                        <button class="sumbit position-absolute" type="submit">
+                          Subscribe
+                        </button>
+                      </div>
+                    </form>
+                    <div class="col-xxl-12 col-lg-3 col-md-4">
+                      <img
+                        alt="payment-method "
+                        class="img-fuild"
+                        src="./Images/payment-method.png"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="col-4 col-md-4 col-xl-2 justify-content-md-center d-flex pb-lg-0 pb-3"
+                >
+                  <div class="footer_text">
+                    <h4 class="fw_600 txt_white mb-4">Information</h4>
+                    <ul class="list-group">
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer txt_hover"
+                          href="about-us.html"
+                          >About us</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer txt_hover"
+                          href="contact-us.html"
+                          >Contact us</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer txt_hover"
+                          href="PrivacyPolicy.html"
+                          >Privacy Policy</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer txt_hover"
+                          href="terms-and-conditions.html"
+                          >Terms &amp; Condition</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer txt_hover"
+                          href="terms-and-conditions.html"
+                          >24/7 Support</a
+                        >
+                      </li>
+                      <li>
+                        <a class="fw_400 h6 txt_footer" href="faq.html">Faq</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div
+                  class="col-4 col-md-4 col-xl-2 justify-content-md-center d-flex pb-lg-0 pb-3"
+                >
+                  <div class="footer_text">
+                    <h4 class="fw_600 txt_white mb-4">Categories</h4>
+                    <ul class="list-group">
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer txt_hover"
+                          href="category-listing.html"
+                          >Electronic &amp; Digital</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer txt_hover"
+                          href="category-listing.html"
+                          >Health &amp; Beauty</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer txt_hover"
+                          href="category-listing.html"
+                          >Return Policy</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer txt_hover"
+                          href="category-listing.html"
+                          >Top 10 Offers</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer txt_hover"
+                          href="category-listing.html"
+                          >Jewelry &amp; Watches</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer txt_hover"
+                          href="category-listing.html"
+                          >Book &amp; Office</a
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div
+                  class="col-4 col-md-4 col-xl-2 justify-content-md-center d-flex pb-lg-0 pb-3"
+                >
+                <div class="footer_text">
+                  <h4 class="fw_600 txt_white mb-4">Brands</h4>
+                  <ul class="list-group">
+                    <li class="fw_400 h6 txt_footer txt_hover">Apple</li>
+                    <li class="fw_400 h6 txt_footer txt_hover">Samsung</li>
+                   
+                  </ul>
+                </div>
+                </div>
+                <div
+                  class="col-12 col-md-12 col-xl-3 d-flex flex-column align-items-center pt-md-4 pb-lg-0 pb-4"
+                >
+                  <div class="address_footer_text pb-3">
+                    <div class="d-flex align-items-start">
+                      <svg
+                        class="feather feather-phone"
+                        color="#FFC000"
+                        fill="none"
+                        height="24"
+                        stroke="currentcolor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewbox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+                        ></path>
+                      </svg>
+                      <div class="footer_txt">
+                        <span class="h7 txt_white text-uppercase d-block"
+                          >Hotline Free :</span
+                        >
+                        <a href="tel:(+965)7492-4277">
+                          <h5 class="fw_700 txt_yellow">(416) 635-0502</h5></a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <h6 class="d-flex align-items-start txt_footer lh-base mb-3">
+                    <b>Address:</b> 55 De Boers Drive,
+                    Ontario<br />
+                    M3J 0G5 Canada
+                  </h6>
+                  <h6 class="d-flex align-items-start txt_footer m-0">
+                    <b>Email:</b>
+                    <a
+                      class="txt_white txt_hover"
+                      href="mailto:info@gservetech.com"
+                      >info@gservetech.com</a
+                    >
+                  </h6>
+                  <ul class="footer_social text-center">
+                    <li>
+                      <a href="#"
+                        ><svg
+                          height="512"
+                          id="Capa_1"
+                          style="enable-background: new 0 0 24 24"
+                          version="1.1"
+                          viewbox="0 0 24 24"
+                          width="512"
+                          x="0px"
+                          xml:space="preserve"
+                          xmlns="http://www.w3.org/2000/svg"
+                          xmlns:xlink="http://www.w3.org/1999/xlink"
+                          y="0px"
+                        >
+                          <g>
+                            <path
+                              d="M24,12.073c0,5.989-4.394,10.954-10.13,11.855v-8.363h2.789l0.531-3.46H13.87V9.86c0-0.947,0.464-1.869,1.95-1.869h1.509 V5.045c0,0-1.37-0.234-2.679-0.234c-2.734,0-4.52,1.657-4.52,4.656v2.637H7.091v3.46h3.039v8.363C4.395,23.025,0,18.061,0,12.073 c0-6.627,5.373-12,12-12S24,5.445,24,12.073z"
+                            ></path>
+                          </g></svg
+                      ></a>
+                    </li>
+                    <li>
+                      <a href=""
+                        ><svg
+                          height="512"
+                          id="Capa_2"
+                          style="enable-background: new 0 0 24 24"
+                          version="1.1"
+                          viewbox="0 0 24 24"
+                          width="512"
+                          x="0px"
+                          xml:space="preserve"
+                          xmlns="http://www.w3.org/2000/svg"
+                          xmlns:xlink="http://www.w3.org/1999/xlink"
+                          y="0px"
+                        >
+                          <g>
+                            <path
+                              d="M12,2.162c3.204,0,3.584,0.012,4.849,0.07c1.308,0.06,2.655,0.358,3.608,1.311c0.962,0.962,1.251,2.296,1.311,3.608 c0.058,1.265,0.07,1.645,0.07,4.849c0,3.204-0.012,3.584-0.07,4.849c-0.059,1.301-0.364,2.661-1.311,3.608 c-0.962,0.962-2.295,1.251-3.608,1.311c-1.265,0.058-1.645,0.07-4.849,0.07s-3.584-0.012-4.849-0.07 c-1.291-0.059-2.669-0.371-3.608-1.311c-0.957-0.957-1.251-2.304-1.311-3.608c-0.058-1.265-0.07-1.645-0.07-4.849 c0-3.204,0.012-3.584,0.07-4.849c0.059-1.296,0.367-2.664,1.311-3.608c0.96-0.96,2.299-1.251,3.608-1.311 C8.416,2.174,8.796,2.162,12,2.162 M12,0C8.741,0,8.332,0.014,7.052,0.072C5.197,0.157,3.355,0.673,2.014,2.014 C0.668,3.36,0.157,5.198,0.072,7.052C0.014,8.332,0,8.741,0,12c0,3.259,0.014,3.668,0.072,4.948c0.085,1.853,0.603,3.7,1.942,5.038 c1.345,1.345,3.186,1.857,5.038,1.942C8.332,23.986,8.741,24,12,24c3.259,0,3.668-0.014,4.948-0.072 c1.854-0.085,3.698-0.602,5.038-1.942c1.347-1.347,1.857-3.184,1.942-5.038C23.986,15.668,24,15.259,24,12 c0-3.259-0.014-3.668-0.072-4.948c-0.085-1.855-0.602-3.698-1.942-5.038c-1.343-1.343-3.189-1.858-5.038-1.942 C15.668,0.014,15.259,0,12,0z"
+                            ></path>
+                            <path
+                              d="M12,5.838c-3.403,0-6.162,2.759-6.162,6.162c0,3.403,2.759,6.162,6.162,6.162s6.162-2.759,6.162-6.162 C18.162,8.597,15.403,5.838,12,5.838z M12,16c-2.209,0-4-1.791-4-4s1.791-4,4-4s4,1.791,4,4S14.209,16,12,16z"
+                            ></path>
+                            <circle cx="18.406" cy="5.594" r="1.44"></circle>
+                          </g></svg
+                      ></a>
+                    </li>
+                    <li>
+                      <a href=""
+                        ><svg
+                          height="512"
+                          id="Capa_3"
+                          style="enable-background: new 0 0 24 24"
+                          version="1.1"
+                          viewbox="0 0 24 24"
+                          width="512"
+                          x="0px"
+                          xml:space="preserve"
+                          xmlns="http://www.w3.org/2000/svg"
+                          xmlns:xlink="http://www.w3.org/1999/xlink"
+                          y="0px"
+                        >
+                          <g>
+                            <path
+                              d="M12.01,0C5.388,0,0.02,5.368,0.02,11.99c0,5.082,3.158,9.424,7.618,11.171c-0.109-0.947-0.197-2.408,0.039-3.444 c0.217-0.938,1.401-5.961,1.401-5.961s-0.355-0.72-0.355-1.776c0-1.668,0.967-2.911,2.171-2.911c1.026,0,1.52,0.77,1.52,1.688 c0,1.026-0.651,2.566-0.997,3.997c-0.286,1.194,0.602,2.171,1.776,2.171c2.132,0,3.77-2.25,3.77-5.487 c0-2.872-2.062-4.875-5.013-4.875c-3.414,0-5.418,2.556-5.418,5.201c0,1.026,0.395,2.132,0.888,2.734 C7.52,14.615,7.53,14.724,7.5,14.842c-0.089,0.375-0.296,1.194-0.336,1.362c-0.049,0.217-0.178,0.266-0.405,0.158 c-1.5-0.701-2.438-2.882-2.438-4.648c0-3.78,2.743-7.253,7.924-7.253c4.155,0,7.391,2.961,7.391,6.928 c0,4.135-2.605,7.461-6.217,7.461c-1.214,0-2.359-0.632-2.743-1.382c0,0-0.602,2.289-0.75,2.852 c-0.266,1.046-0.997,2.349-1.49,3.148C9.562,23.812,10.747,24,11.99,24c6.622,0,11.99-5.368,11.99-11.99C24,5.368,18.632,0,12.01,0 z"
+                            ></path>
+                          </g></svg
+                      ></a>
+                    </li>
+                    <li>
+                      <a href=""
+                        ><svg
+                          height="512"
+                          id="Capa_4"
+                          style="enable-background: new 0 0 24 24"
+                          version="1.1"
+                          viewbox="0 0 24 24"
+                          width="512"
+                          x="0px"
+                          xml:space="preserve"
+                          xmlns="http://www.w3.org/2000/svg"
+                          xmlns:xlink="http://www.w3.org/1999/xlink"
+                          y="0px"
+                        >
+                          <g id="XMLID_184_">
+                            <path
+                              d="M23.498,6.186c-0.276-1.039-1.089-1.858-2.122-2.136C19.505,3.546,12,3.546,12,3.546s-7.505,0-9.377,0.504 C1.591,4.328,0.778,5.146,0.502,6.186C0,8.07,0,12,0,12s0,3.93,0.502,5.814c0.276,1.039,1.089,1.858,2.122,2.136 C4.495,20.454,12,20.454,12,20.454s7.505,0,9.377-0.504c1.032-0.278,1.845-1.096,2.122-2.136C24,15.93,24,12,24,12 S24,8.07,23.498,6.186z M9.546,15.569V8.431L15.818,12L9.546,15.569z"
+                            ></path>
+                          </g></svg
+                      ></a>
+                    </li>
+                    <li>
+                      <a href=""
+                        ><svg
+                          height="512"
+                          id="Capa_5"
+                          style="enable-background: new 0 0 24 24"
+                          version="1.1"
+                          viewbox="0 0 24 24"
+                          width="512"
+                          x="0px"
+                          xml:space="preserve"
+                          xmlns="http://www.w3.org/2000/svg"
+                          xmlns:xlink="http://www.w3.org/1999/xlink"
+                          y="0px"
+                        >
+                          <g>
+                            <path
+                              d="M17.291,19.073h-3.007v-4.709c0-1.123-0.02-2.568-1.564-2.568c-1.566,0-1.806,1.223-1.806,2.487v4.79H7.908 V9.389h2.887v1.323h0.04c0.589-1.006,1.683-1.607,2.848-1.564c3.048,0,3.609,2.005,3.609,4.612L17.291,19.073z M4.515,8.065 c-0.964,0-1.745-0.781-1.745-1.745c0-0.964,0.781-1.745,1.745-1.745c0.964,0,1.745,0.781,1.745,1.745 C6.26,7.284,5.479,8.065,4.515,8.065L4.515,8.065 M6.018,19.073h-3.01V9.389h3.01V19.073z M18.79,1.783H1.497 C0.68,1.774,0.01,2.429,0,3.246V20.61c0.01,0.818,0.68,1.473,1.497,1.464H18.79c0.819,0.01,1.492-0.645,1.503-1.464V3.245 c-0.012-0.819-0.685-1.474-1.503-1.463"
+                              id="Path_2520"
+                            ></path>
+                          </g></svg
+                      ></a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="bottom-footer top_padding bottom_padding">
+              <div class="container">
+                <div class="align-items-center">
+                  <div class="text-center">
+                    <ul class="mb-3">
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer mb-0 txt_hover"
+                          href="terms-and-conditions.html"
+                          >Privacy Policy</a
+                        >
+                      </li>
+                    
+                      <li>
+                        <a
+                          class="fw_400 h6 txt_footer mb-0 txt_hover"
+                          href="terms-and-conditions.html"
+                          >Terms of Use</a
+                        >
+                      </li>
+               
+                    </ul>
+                    <p class="h6 txt_footer m-0">
+                      COPYRIGHT 2025 © GServeTech Inc.  ALL RIGHTS RESERVED.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+      <a class="back-to-top" href="#"
+        ><svg
+          height="48"
+          viewbox="0 96 960 960"
+          width="48"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M450 976V290L242 498l-42-42 280-280 280 280-42 42-208-208v686h-60Z"
+          ></path></svg
+      ></a>
+      <script src="JS/jquery.min.js"></script>
+      <script src="JS/bootstrap.bundle.min.js"></script>
+      <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        rel="stylesheet"
+      />
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+      <script src="JS/custom.js"></script>
+      <script>
+        // loader js
+        jQuery(window).on("load", function () {
+          jQuery(".alloader ").fadeOut(600);
+          jQuery(".alloader .rotating ").addClass("theme-open ");
+        });
+        // Count timer js
+        function pad(n) {
+          return (n < 10 ? "0" : "") + n;
+        }
+
+        (function () {
+          const second = 1000,
+            minute = second * 60,
+            hour = minute * 60,
+            day = hour * 24;
+
+          //I'm adding this section so I don't have to keep updating this pen every year :-)
+          //remove this if you don't need it
+          let today = new Date(),
+            dd = String(today.getDate()).padStart(2, "0 "),
+            mm = String(today.getMonth() + 1).padStart(2, "0 "),
+            yyyy = today.getFullYear(),
+            nextYear = yyyy + 1,
+            dayMonth = "08/01/ ",
+            birthday = dayMonth + yyyy;
+
+          today = mm + "/ " + dd + "/ " + yyyy;
+          if (today > birthday) {
+            birthday = dayMonth + nextYear;
+          }
+          //end
+
+          const countDown = new Date(birthday).getTime(),
+            x = setInterval(function () {
+              const now = new Date().getTime(),
+                distance = countDown - now;
+
+              (document.getElementById("days ").innerText = pad(
+                parseInt(distance / day)
+              )),
+                (document.getElementById("hours ").innerText = pad(
+                  parseInt((distance % day) / hour)
+                )),
+                (document.getElementById("minutes ").innerText = pad(
+                  parseInt((distance % hour) / minute)
+                )),
+                (document.getElementById("seconds ").innerText = pad(
+                  parseInt((distance % minute) / second)
+                ));
+
+              if (distance < 0) {
+                document.getElementById("countdown ").style.display = "none ";
+                $(".product-countdown ").addClass("product-count-hide");
+                clearInterval(x);
+              } else {
+                $(".product-countdown ").removeClass("product-count-hide");
+              }
+            }, 0);
+        })();
+      </script>
+    </div>
+  </body>
+</html>

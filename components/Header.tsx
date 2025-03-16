@@ -191,7 +191,7 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
         <div className="flex justify-end items-center px-4 space-x-3">
           <Link
             className="text-sm border-r border-[#ffffff46] px-3"
-            href="/about-us"
+            href="/about"
           >
             About Us
           </Link>

@@ -155,9 +155,10 @@ const OrdersPage = async () => {
                     <div className="space-y-1">
                       <CardTitle className="text-lg">
                         Order #
-                        {order.ordernumber
+                        {/* {order.ordernumber
                           ? order.ordernumber.slice(0, 8)
-                          : "N/A"}
+                          : "N/A"} */}
+                        {order.ordernumber}
                       </CardTitle>
                       <div className="flex items-center gap-2 text-sm text-gray-500">
                         <Calendar className="h-4 w-4" />

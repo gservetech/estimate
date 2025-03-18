@@ -8,6 +8,7 @@ import {
   getProvinceId,
 } from "@/lib/createOrder";
 import { Product } from "@/types/product.types";
+import { formatDate } from "@/lib/utils";
 
 interface CartItem {
   product: Product;
@@ -50,11 +51,14 @@ export async function POST(
     const response = await paypalClient().execute(captureRequest);
     const result = response.result;
 
+    console.log("result", result);
+
     const purchaseUnits = result.purchase_units;
 
     if (result.status === "COMPLETED") {
       const payment = purchaseUnits[0].payments.captures[0];
       const shipping = purchaseUnits[0].shipping?.address;
+      const payer = result.payer;
 
       console.log("payment", payment);
       console.log("shipping", shipping);
@@ -187,6 +191,47 @@ export async function POST(
           { error: orderResult.error || "Failed to create order in system" },
           { status: 500 }
         );
+      }
+
+      // Send confirmation email
+      try {
+        const emailData = {
+          email: payer.email_address,
+          orderNumber: orderResult.orderNumber,
+          orderDate: formatDate(new Date()),
+          items: cartItems.map((item: CartItem) => ({
+            quantity: item.quantity,
+            name: item.product.name,
+            price: item.product.price,
+          })),
+          total: payment.amount.value,
+          customerName:
+            payer.name.given_name || payer.name.surname || "Valued Customer",
+          shippingAddress: `${shipping?.address_line_1}\n${shipping?.admin_area_2}, ${shipping?.admin_area_1}\n${shipping?.postal_code}\n${shipping?.country_code}`,
+        };
+
+        console.log("emailData", emailData);
+
+        const emailResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/sendEmail`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(emailData),
+          }
+        );
+
+        if (!emailResponse.ok) {
+          console.error(
+            "Failed to send confirmation email:",
+            await emailResponse.json()
+          );
+        }
+      } catch (emailError) {
+        console.error("Error sending confirmation email:", emailError);
+        // Don't return here - we still want to return the successful order creation
       }
 
       return NextResponse.json<CaptureOrderResponse>({

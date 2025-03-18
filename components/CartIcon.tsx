@@ -1,5 +1,6 @@
 "use client";
 import useCartStore from "@/store";
+// import useLocationStore from "@/store/locationStore";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MdOutlineShoppingCart } from "react-icons/md";
@@ -7,6 +8,9 @@ import { MdOutlineShoppingCart } from "react-icons/md";
 const CartIcon = () => {
   const [isClient, setIsClient] = useState(false);
   const totalPrice = useCartStore((state) => state.getTotalPrice());
+  // const { country } = useLocationStore();
+
+  // const currency = country === "CA" ? "CAD" : "USD";
 
   useEffect(() => {
     setIsClient(true);

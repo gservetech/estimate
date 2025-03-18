@@ -8,6 +8,7 @@ import { useAuth } from "@clerk/nextjs";
 import useOrderStore from "@/store/orderStore";
 import useCartStore from "@/store";
 import { getClientOrders } from "@/lib/getClientOrders";
+import useLocationStore from "@/store/locationStore";
 
 interface PayPalButtonProps {
   amount: string;
@@ -20,6 +21,9 @@ export function PayPalButton({ amount }: PayPalButtonProps) {
   const { userId } = useAuth();
   const { setOrders, setUserId } = useOrderStore();
   const { resetCart } = useCartStore();
+  const { country } = useLocationStore();
+
+  const currency = country === "CA" ? "CAD" : "USD";
 
   const createOrder = async (): Promise<string> => {
     if (!userId) {
@@ -34,7 +38,7 @@ export function PayPalButton({ amount }: PayPalButtonProps) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ amount, userId }),
+          body: JSON.stringify({ amount, userId, currency }),
         }
       );
 

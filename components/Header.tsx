@@ -22,6 +22,7 @@ import { FiUser } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import CartIcon from "./CartIcon";
 import { getClientOrders } from "@/lib/getClientOrders";
+import useLocationStore from "@/store/locationStore";
 
 interface HeaderProps {
   user: User | null;
@@ -29,8 +30,8 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
-  const [country, setCountry] = useState<string>("CA");
-  const [currency] = useState<string>("CAD");
+  const [, setCountry] = useState<string>("CA");
+  // const [currency] = useState<string>("CAD");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isClient, setIsClient] = useState(false);
   const {
@@ -42,6 +43,15 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
   } = useOrderStore();
   const { userId } = useAuth();
   const [orderCount, setOrderCount] = useState<number>(0);
+  const { country: countryStore, fetchLocation } = useLocationStore();
+
+  useEffect(() => {
+    fetchLocation();
+  }, [fetchLocation]);
+
+  const currencyStore = countryStore === "CA" ? "CAD" : "USD";
+
+  console.log("currencyStore", currencyStore);
 
   // Effect to handle initial order loading
   useEffect(() => {
@@ -180,10 +190,6 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
     fetchAndStoreVisit();
   }, []);
 
-  // Use our local state for order count instead of relying on the store
-  // This ensures we always show the correct count even if the store's getOrdersCount
-  // function has conditions that might prevent it from returning the actual count
-
   return (
     <>
       {/* 🔹 Top Bar */}
@@ -198,18 +204,20 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
           <div className="flex items-center gap-1 border-r border-[#ffffff46] px-3">
             <Image
               className="w-6 h-4"
-              src={country === "CA" ? "/cf.png" : "/us.png"}
+              src={countryStore === "CA" ? "/cf.png" : "/us.png"}
               alt=""
               width={24}
               height={24}
             />
             <span className="text-sm text-white font-bold">
-              {country === "CA" ? "Canada" : "USA"}
+              {countryStore === "CA" ? "Canada" : "USA"}
             </span>
           </div>
           <div className="flex items-center gap-1 px-3">
             <span>$</span>
-            <span className="text-sm text-white font-bold">{currency}</span>
+            <span className="text-sm text-white font-bold">
+              {currencyStore}
+            </span>
           </div>
         </div>
       </div>

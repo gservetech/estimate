@@ -1,3 +1,4 @@
+import useLocationStore from "@/store/locationStore";
 import { twMerge } from "tailwind-merge";
 
 interface Props {
@@ -6,8 +7,11 @@ interface Props {
 }
 
 const PriceFormatter = ({ amount, className }: Props) => {
+  const { country } = useLocationStore();
+
+  const currency = country === "CA" ? "CAD" : "USD";
   const formattedPrice = new Number(amount).toLocaleString("en-US", {
-    currency: "USD",
+    currency: currency,
     style: "currency",
     minimumFractionDigits: 2,
   });

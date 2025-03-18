@@ -1,24 +1,34 @@
-import {ReactNode} from "react";
-import {PayPalScriptProvider} from "@paypal/react-paypal-js";
+import { ReactNode, useEffect } from "react";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import useLocationStore from "@/store/locationStore";
 
+const PayPalProvider = ({ children }: { children: ReactNode }) => {
+  const { country, fetchLocation } = useLocationStore();
 
-const PayPalProvider = ({children}: { children: ReactNode }) => {
+  const currency = country === "CA" ? "CAD" : "USD";
 
-    if (!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID) {
-        throw new Error("PayPal client ID is not set");
-    }
+  // Fetch location on mount
+  useEffect(() => {
+    fetchLocation();
+  }, [fetchLocation]);
 
-    const initialOptions = {
-        clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
-        currency: "USD",
-        intent: process.env.PAYPAL_MODE
-    }
+  if (!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID) {
+    throw new Error("PayPal client ID is not set");
+  }
 
-    return (
-        <PayPalScriptProvider options={initialOptions}>
-            {children}
-        </PayPalScriptProvider>
-    );
+  console.log("currency", currency);
+
+  const initialOptions = {
+    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
+    currency: currency,
+    intent: process.env.PAYPAL_MODE,
+  };
+
+  return (
+    <PayPalScriptProvider options={initialOptions}>
+      {children}
+    </PayPalScriptProvider>
+  );
 };
 
 export default PayPalProvider;

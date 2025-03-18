@@ -9,9 +9,12 @@ import { twMerge } from "tailwind-merge";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import useLocationStore from "@/store/locationStore";
 
 const ProductCard = ({ product, own }: { product: Product; own: boolean }) => {
   const router = useRouter();
+  const { country } = useLocationStore();
+  const currency = country === "CA" ? "CAD" : "USD";
 
   const handleViewClick = () => {
     router.push(`/product/${product.id}`);
@@ -68,11 +71,13 @@ const ProductCard = ({ product, own }: { product: Product; own: boolean }) => {
         </p>
         <div className="text-center">
           <p className="text-lg font-bold text-black">
-            C${product.price.toFixed(2)}
+            {currency}
+            {product.price.toFixed(2)}
           </p>
           {product.discount && (
             <p className="text-gray-500 text-xs line-through">
-              C${(product.price + product.discount).toFixed(2)}
+              {currency}
+              {(product.price + product.discount).toFixed(2)}
             </p>
           )}
           <p className="text-xs text-gray-600">

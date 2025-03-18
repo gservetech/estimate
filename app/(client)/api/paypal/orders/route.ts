@@ -5,11 +5,13 @@ import paypalClient, { CreateOrderResponse } from "@/lib/paypal";
 interface CreateOrderRequest {
   amount: string;
   userId?: string;
+  currency: string;
 }
 
 export async function POST(request: Request) {
   try {
-    const { amount, userId }: CreateOrderRequest = await request.json();
+    const { amount, userId, currency }: CreateOrderRequest =
+      await request.json();
 
     if (!amount || isNaN(parseFloat(amount))) {
       return NextResponse.json(
@@ -35,7 +37,7 @@ export async function POST(request: Request) {
       purchase_units: [
         {
           amount: {
-            currency_code: "USD",
+            currency_code: currency,
             value: Number(amount).toFixed(2),
           },
           custom_id: userId,

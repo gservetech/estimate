@@ -54,10 +54,17 @@ export function PayPalButton({ amount }: PayPalButtonProps) {
 
   const onApprove = async (data: { orderID: string }) => {
     try {
+      // Get cart items before making the request
+      const cartItems = useCartStore.getState().getGroupedItems();
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/paypal/orders/${data.orderID}`,
         {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ cartItems }),
         }
       );
 
@@ -67,6 +74,9 @@ export function PayPalButton({ amount }: PayPalButtonProps) {
         throw new Error(captureData.error || "Payment capture failed");
       }
 
+      // Clear the cart after successful order
+      // useCartStore.getState().resetCart();
+
       if (captureData.status === "COMPLETED") {
         if (userId) {
           try {
@@ -75,26 +85,25 @@ export function PayPalButton({ amount }: PayPalButtonProps) {
             if (!error && orders.length > 0) {
               setOrders(orders);
               setTimeout(() => {
-                resetCart();
-                // Pass the order number instead of PayPal's orderId
                 router.push(`/success?orderNumber=${captureData.orderNumber}`);
                 toast.success("Payment successful");
+                resetCart();
               }, 100);
             } else if (error) {
-              resetCart();
               router.push(`/success?orderNumber=${captureData.orderNumber}`);
               toast.success("Payment successful");
+              resetCart();
             }
           } catch (error) {
-            resetCart();
             router.push(`/success?orderNumber=${captureData.orderNumber}`);
             toast.success("Payment successful");
             console.error("Error fetching orders:", error);
+            resetCart();
           }
         } else {
-          resetCart();
           router.push(`/success?orderNumber=${captureData.orderNumber}`);
           toast.success("Payment successful");
+          resetCart();
         }
       }
     } catch (error) {

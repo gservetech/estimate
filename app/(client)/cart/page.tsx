@@ -248,10 +248,16 @@ const CartPage = () => {
         return;
       }
 
-      setShippingCostList([...response.options]);
-      setSelectedShippingCharge(response.options[0].price);
+      const sortedOptions = [...response.options].sort(
+        (a, b) => a.price - b.price
+      );
+      setShippingCostList(sortedOptions);
+
+      // Set the first (cheapest) option as default
+      const firstOptionPrice = sortedOptions[0].price;
+      setSelectedShippingCharge(firstOptionPrice);
       setSelectedService(
-        response.options[0].price + useCartStore?.getState().getTotalPrice()
+        firstOptionPrice + useCartStore?.getState().getTotalPrice()
       );
       setShowShipping(3);
     } catch (err) {

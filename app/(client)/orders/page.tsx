@@ -21,11 +21,12 @@ import { redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 // Update the Order type to match your actual data structure
-interface OrderProduct {
+
+type OrderProduct = Array<{
   product_id: number;
   quantity: number;
   unit_price: number;
-}
+}>;
 
 const OrdersPage = async () => {
   const {
@@ -130,7 +131,7 @@ const OrdersPage = async () => {
     }
   };
 
-  const calculateTotalItems = (products: OrderProduct[] | undefined) => {
+  const calculateTotalItems = (products: OrderProduct | undefined) => {
     if (!products) return 0;
     return products.reduce((sum, product) => sum + (product.quantity || 0), 0);
   };
@@ -155,9 +156,10 @@ const OrdersPage = async () => {
                     <div className="space-y-1">
                       <CardTitle className="text-lg">
                         Order #
-                        {order.ordernumber
+                        {/* {order.ordernumber
                           ? order.ordernumber.slice(0, 8)
-                          : "N/A"}
+                          : "N/A"} */}
+                        {order.ordernumber}
                       </CardTitle>
                       <div className="flex items-center gap-2 text-sm text-gray-500">
                         <Calendar className="h-4 w-4" />

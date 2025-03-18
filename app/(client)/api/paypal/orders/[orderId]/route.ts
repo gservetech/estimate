@@ -7,12 +7,22 @@ import {
   getCountryId,
   getProvinceId,
 } from "@/lib/createOrder";
+import { Product } from "@/types/product.types";
+
+interface CartItem {
+  product: Product;
+  unitPrice: number;
+  quantity: number;
+}
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ orderId: string }> }
 ) {
   const { orderId } = await params;
+  const { cartItems } = await request.json();
+
+  console.log("cartItems", cartItems);
 
   try {
     // First verify the order details
@@ -39,17 +49,32 @@ export async function POST(
     );
     const response = await paypalClient().execute(captureRequest);
     const result = response.result;
+
     const purchaseUnits = result.purchase_units;
 
     if (result.status === "COMPLETED") {
       const payment = purchaseUnits[0].payments.captures[0];
       const shipping = purchaseUnits[0].shipping?.address;
 
-      // Get country ID based on country code
+      console.log("payment", payment);
+      console.log("shipping", shipping);
+
+      // Transform cart items into order products with proper typing
+      const orderProducts = cartItems.map((item: CartItem) => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        unitPrice: item.product.price,
+      }));
+
+      // Calculate total price from cart items
+      // const totalPrice = orderProducts.reduce(
+      //   (sum: number, item: CartItem) => sum + item.unitPrice * item.quantity,
+      //   0
+      // );
+
+      // Get country and province/state IDs
       const countryCode = shipping?.country_code || "US";
       const { id: countryId, name: countryName } = getCountryId(countryCode);
-
-      // Get province ID based on admin_area_1 (state/province code) and country
       const provinceCode = shipping?.admin_area_1 || null;
       const { id: provinceId, name: provinceName } = getProvinceId(
         provinceCode,
@@ -62,33 +87,87 @@ export async function POST(
         currentDate.getTime() + 3 * 24 * 60 * 60 * 1000
       );
 
-      const orderData = {
-        clerkId: customId,
-        totalPrice: parseFloat(payment.amount.value),
-        currencyCode: payment.amount.currency_code,
-        amountDiscount: 0,
-        orderStatusId: 3,
-        orderDate: currentDate.toISOString().slice(0, 19),
-        trackingNumber: generateTrackingNumber(),
-        deliveryDate: deliveryDate.toISOString().slice(0, 19),
-        shippingAddressId: 1,
-        street: shipping?.address_line_1 || "",
-        city: shipping?.admin_area_2 || "",
-        provinceId,
-        provinceName: provinceName,
-        countryId,
-        countryName: countryName,
-        postalCode: shipping?.postal_code || "",
-        products: [
-          {
-            productId: 1,
-            quantity: 1,
-            unitPrice: parseFloat(payment.amount.value),
-          },
-        ],
-      };
+      // Check if address exists for the user
+      let shippingAddressId;
+      let existingAddressId = 0;
 
-      // Make the request directly to the backend server
+      try {
+        const addressCheckResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/clerk/${customId}/address`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (addressCheckResponse.ok) {
+          const existingAddress = await addressCheckResponse.json();
+          console.log("existingAddress", existingAddress);
+          existingAddressId = existingAddress.id;
+
+          // Check if the address details match
+          const addressMatches =
+            existingAddress.street === (shipping?.address_line_1 || "") &&
+            existingAddress.city === (shipping?.admin_area_2 || "") &&
+            existingAddress.province?.id === provinceId &&
+            existingAddress.province?.name === provinceName &&
+            existingAddress.country?.id === countryId &&
+            existingAddress.country?.name === countryName &&
+            existingAddress.postal_code === (shipping?.postal_code || "");
+
+          if (addressMatches) {
+            shippingAddressId = existingAddress.id;
+          } else {
+            shippingAddressId = existingAddressId + 1;
+          }
+        }
+      } catch (error) {
+        console.error("Error checking existing address:", error);
+      }
+
+      // Create the order data based on whether address matched or not
+      let orderData;
+      if (shippingAddressId === existingAddressId) {
+        // Use existing address
+        orderData = {
+          clerkId: customId,
+          totalPrice: payment.amount.value,
+          currencyCode: payment.amount.currency_code,
+          amountDiscount: 0,
+          orderStatusId: 3,
+          orderDate: currentDate.toISOString().slice(0, 19),
+          trackingNumber: generateTrackingNumber(),
+          deliveryDate: deliveryDate.toISOString().slice(0, 19),
+          shippingAddressId,
+          products: orderProducts,
+        };
+      } else {
+        // Create new address
+        orderData = {
+          clerkId: customId,
+          totalPrice: payment.amount.value,
+          currencyCode: payment.amount.currency_code,
+          amountDiscount: 0,
+          orderStatusId: 3,
+          orderDate: currentDate.toISOString().slice(0, 19),
+          trackingNumber: generateTrackingNumber(),
+          deliveryDate: deliveryDate.toISOString().slice(0, 19),
+          shippingAddressId,
+          street: shipping?.address_line_1 || "",
+          city: shipping?.admin_area_2 || "",
+          provinceId,
+          provinceName,
+          countryId,
+          countryName,
+          postalCode: shipping?.postal_code || "",
+          products: orderProducts,
+        };
+      }
+
+      console.log("orderDataa", orderData);
+
       const orderResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/create`,
         {

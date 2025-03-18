@@ -21,11 +21,12 @@ import { redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 // Update the Order type to match your actual data structure
-interface OrderProduct {
+
+type OrderProduct = Array<{
   product_id: number;
   quantity: number;
   unit_price: number;
-}
+}>;
 
 const OrdersPage = async () => {
   const {
@@ -130,7 +131,7 @@ const OrdersPage = async () => {
     }
   };
 
-  const calculateTotalItems = (products: OrderProduct[] | undefined) => {
+  const calculateTotalItems = (products: OrderProduct | undefined) => {
     if (!products) return 0;
     return products.reduce((sum, product) => sum + (product.quantity || 0), 0);
   };

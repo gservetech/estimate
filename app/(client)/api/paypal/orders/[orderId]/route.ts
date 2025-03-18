@@ -56,6 +56,9 @@ export async function POST(
       const payment = purchaseUnits[0].payments.captures[0];
       const shipping = purchaseUnits[0].shipping?.address;
 
+      console.log("payment", payment);
+      console.log("shipping", shipping);
+
       // Transform cart items into order products with proper typing
       const orderProducts = cartItems.map((item: CartItem) => ({
         productId: item.product.id,
@@ -64,10 +67,10 @@ export async function POST(
       }));
 
       // Calculate total price from cart items
-      const totalPrice = orderProducts.reduce(
-        (sum: number, item: CartItem) => sum + item.unitPrice * item.quantity,
-        0
-      );
+      // const totalPrice = orderProducts.reduce(
+      //   (sum: number, item: CartItem) => sum + item.unitPrice * item.quantity,
+      //   0
+      // );
 
       // Get country and province/state IDs
       const countryCode = shipping?.country_code || "US";
@@ -144,7 +147,7 @@ export async function POST(
         // Create new address
         orderData = {
           clerkId: customId,
-          totalPrice: totalPrice,
+          totalPrice: payment.amount.value,
           currencyCode: payment.amount.currency_code,
           amountDiscount: 0,
           orderStatusId: 3,
@@ -162,6 +165,8 @@ export async function POST(
           products: orderProducts,
         };
       }
+
+      console.log("orderDataa", orderData);
 
       const orderResponse = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/create`,

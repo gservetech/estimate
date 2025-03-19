@@ -561,13 +561,8 @@ const CartPage = () => {
                                 (item: ShippingOption, ind: number) => (
                                   <option key={ind} value={item?.price}>
                                     {item?.service} -{" "}
-                                    <PriceFormatter
-                                      amount={
-                                        item?.price
-                                        // useCartStore?.getState().getTotalPrice()
-                                      }
-                                      className="text-lg font-bold text-black"
-                                    />
+                                    <PriceFormatter amount={item?.price} raw />{" "}
+                                    {/* ✅ Now returns only text */}
                                   </option>
                                 )
                               )}

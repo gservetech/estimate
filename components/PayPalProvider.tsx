@@ -4,27 +4,23 @@ import useLocationStore from "@/store/locationStore";
 
 const PayPalProvider = ({ children }: { children: ReactNode }) => {
   const { country, fetchLocation } = useLocationStore();
-
   const currency = country === "CA" ? "CAD" : "USD";
 
-  const country_en = country === "CA" ? "en_CA" : "en_US";
-
-  // Fetch location on mount
   useEffect(() => {
     fetchLocation();
   }, [fetchLocation]);
 
-  if (!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID) {
+  const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+  if (!clientId) {
+    console.error("PayPal client ID is not set");
     throw new Error("PayPal client ID is not set");
   }
 
-  console.log("currency", currency);
-
   const initialOptions = {
-    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
-    currency: process.env.NEXT_PUBLIC_CURRENCY || "CAD", // Ensure currency is defined
-    intent: process.env.NEXT_PUBLIC_PAYPAL_MODE || "capture", // Ensure intent is defined
-    locale: process.env.NEXT_PUBLIC_COUNTRY_EN || "en_US", // Ensure locale is defined
+    clientId,
+    currency,
+    intent: "capture",
+    locale: country === "CA" ? "en_CA" : "en_US",
   };
 
   return (

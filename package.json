@@ -48,6 +48,7 @@
     "zustand": "^5.0.1"
   },
   "devDependencies": {
+    "@types/dotenv": "^6.1.1",
     "@types/mapbox__mapbox-gl-geocoder": "^5.0.0",
     "@types/node": "^20",
     "@types/paypal__checkout-server-sdk": "^1.0.8",

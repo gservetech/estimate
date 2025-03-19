@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       purchase_units: [
         {
           amount: {
-            currency_code: currency,
+            currency_code: "CAD",
             value: Number(amount).toFixed(2),
           },
           custom_id: userId,

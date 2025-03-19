@@ -22,9 +22,9 @@ const PayPalProvider = ({ children }: { children: ReactNode }) => {
 
   const initialOptions = {
     clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
-    currency: currency,
-    intent: process.env.PAYPAL_MODE,
-    locale: country_en,
+    currency: process.env.NEXT_PUBLIC_CURRENCY || "CAD", // Ensure currency is defined
+    intent: process.env.NEXT_PUBLIC_PAYPAL_MODE || "capture", // Ensure intent is defined
+    locale: process.env.NEXT_PUBLIC_COUNTRY_EN || "en_US", // Ensure locale is defined
   };
 
   return (

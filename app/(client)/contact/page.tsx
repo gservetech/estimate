@@ -1,4 +1,3 @@
-
 import Footer from "@/components/Footer";
 import Container from "@/components/Container";
 import Image from "next/image";
@@ -7,7 +6,6 @@ import Link from "next/link";
 export default function ContactPage() {
   return (
     <>
-     
       <section className="py-4 bg-light-blue">
         <Container className="flex justify-between items-center">
           <h5 className="text-primary">Contact Us</h5>
@@ -85,7 +83,6 @@ export default function ContactPage() {
           </div>
         </Container>
       </section>
-      <Footer /> {/* ✅ Include the Footer */}
     </>
   );
 }

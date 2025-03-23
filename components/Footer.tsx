@@ -5,28 +5,13 @@ import payment from "@/images/payment.png";
 
 const Footer = () => {
   return (
-    // <div className="bg-lightBg text-sm">
-    //   <Container className="py-5">
-    //     <footer className="flex items-center justify-between">
-    //       <p className="text-gray-500">
-    //         Copyright © 2024{" "}
-    //         <span className="text-darkBlue font-semibold">GServeTech</span> all
-    //         rights reserved. <span className="text-darkBlue font-semibold">📞 416-635-0502</span>{" "}
-    //         <span className="text-darkBlue font-semibold">✉️ info@gservetech.com</span>
-    //       </p>
-    //       <Image src={payment} alt="payment" className="w-64 object-cover" />
-    //     </footer>
-    //   </Container>
-    // </div>
     <footer>
       <div className="main_footer bg_dark_blue mt-5">
         <div className="px-7 lg:px-16">
           <div>
             <div className="grid grid-cols-1 lg:grid-cols-7 gap-5  lg:gap-28 padd-y-80 bottom_border border_gray justify-content-between">
               <div className=" lg:col-span-2 pb-3 pb-lg-3 newsletter-form">
-                <h4 className="txt_white">
-                  Enter your email address
-                </h4>
+                <h4 className="txt_white">Enter your email address</h4>
                 <div className="pay_form">
                   <form
                     action="#"
@@ -73,7 +58,7 @@ const Footer = () => {
                     </li>
                     <li>
                       <a
-                        href="terms-and-conditions.html"
+                        href="/terms"
                         className="fw_400 h6 txt_footer txt_hover"
                       >
                         Privacy Policy
@@ -81,7 +66,7 @@ const Footer = () => {
                     </li>
                     <li>
                       <a
-                        href="terms-and-conditions.html"
+                        href="/terms"
                         className="fw_400 h6 txt_footer txt_hover"
                       >
                         Terms & Condition
@@ -89,98 +74,21 @@ const Footer = () => {
                     </li>
                     <li>
                       <a
-                        href="terms-and-conditions.html"
+                        href="/support"
                         className="fw_400 h6 txt_footer txt_hover"
                       >
                         24/7 Support
                       </a>
                     </li>
                     <li>
-                      <a href="faq.html" className="fw_400 h6 txt_footer">
+                      <a href="/faq" className="fw_400 h6 txt_footer">
                         Faq
                       </a>
                     </li>
                   </ul>
                 </div>
               </div>
-              <div className="  flex-col flex pb-lg-0 pb-3">
-                <div className="footer_text">
-                  <h4 className="fw_600 txt_white mb-4">Categories</h4>
-                  <ul className="flex flex-col gap-1">
-                    <li>
-                      <a
-                        href="category-listing.html"
-                        className="fw_400 h6 txt_footer txt_hover"
-                      >
-                        Electronic & Digital
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="category-listing.html"
-                        className="fw_400 h6 txt_footer txt_hover"
-                      >
-                        Health & Beauty
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="category-listing.html"
-                        className="fw_400 h6 txt_footer txt_hover"
-                      >
-                        Return Policy
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="category-listing.html"
-                        className="fw_400 h6 txt_footer txt_hover"
-                      >
-                        Top 10 Offers
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="category-listing.html"
-                        className="fw_400 h6 txt_footer txt_hover"
-                      >
-                        Jewelry & Watches
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="category-listing.html"
-                        className="fw_400 h6 txt_footer txt_hover"
-                      >
-                        Book & Office
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div className="  flex-col flex pb-lg-0 pb-3">
-                <div className="footer_text">
-                  <h4 className="fw_600 txt_white mb-4">Brands</h4>
-                  <ul className="flex flex-col gap-1">
-                    <li>
-                      <a
-                        href="javascript:void(0);"
-                        className="fw_400 h6 txt_footer txt_hover"
-                      >
-                        Apple
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="javascript:void(0);"
-                        className="fw_400 h6 txt_footer txt_hover"
-                      >
-                        Samsung
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+
               <div className=" lg:col-span-2 flex flex-col items-center pt-md-4 pb-lg-0 pb-4">
                 <div className="address_footer_text pb-3">
                   <div className="flex align-items-start">
@@ -209,11 +117,7 @@ const Footer = () => {
                     </div>
                   </div>
                 </div>
-                <h6 className="flex align-items-start txt_footer lh-base mb-3">
-                  <b>Address:</b> 55 De Boers Drive, ON,
-                  <br />
-                  Canada
-                </h6>
+
                 <h6 className="flex align-items-start txt_footer m-0">
                   <b>Email:</b>
                   <a
@@ -225,7 +129,10 @@ const Footer = () => {
                 </h6>
                 <ul className="footer_social text-center">
                   <li>
-                    <a href="#">
+                    <a
+                      href="https://www.facebook.com/gservetech"
+                      target="_blank"
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -245,7 +152,7 @@ const Footer = () => {
                       </svg>
                     </a>
                   </li>
-                  <li>
+                  {/*   <li>
                     <a href="">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -329,7 +236,7 @@ const Footer = () => {
                         </g>
                       </svg>
                     </a>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
             </div>
@@ -342,7 +249,7 @@ const Footer = () => {
                     <li>
                       <a
                         className="fw_400 h6 txt_footer mb-0 txt_hover"
-                        href="terms-and-conditions.html"
+                        href="/privacy"
                       >
                         Privacy Policy
                       </a>
@@ -351,23 +258,16 @@ const Footer = () => {
                     <li>
                       <a
                         className="fw_400 h6 txt_footer mb-0 txt_hover"
-                        href="terms-and-conditions.html"
+                        href="/terms"
                       >
                         Terms of Use
                       </a>
                     </li>
+
                     <li>
                       <a
                         className="fw_400 h6 txt_footer mb-0 txt_hover"
-                        href="terms-and-conditions.html"
-                      >
-                        Accessibility
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="fw_400 h6 txt_footer mb-0 txt_hover"
-                        href="terms-and-conditions.html"
+                        href="/supplychain"
                       >
                         Supply Chain Transparency
                       </a>

@@ -53,7 +53,7 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      <Footer /> {/* ✅ Include the Footer */}
+  
     </>
   );
 }

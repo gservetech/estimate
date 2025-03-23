@@ -39,6 +39,7 @@ export default function CheckoutButton({
 
     setLoading(true);
     try {
+      console.log("Starting checkout process...");
       const cartItems = getGroupedItems();
 
       const orderData = {
@@ -59,6 +60,8 @@ export default function CheckoutButton({
         })),
       };
 
+      console.log("Initiating PayPal order with data:", orderData);
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/paypal/init`,
         {
@@ -71,10 +74,20 @@ export default function CheckoutButton({
       );
 
       const data = await response.json();
+      console.log("PayPal init response:", data);
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to create order");
       }
+
+      // Store order information
+      const orderNumber = data.order.orderNumber;
+      const paypalToken = data.paypal.id; // or wherever the token is in the response
+
+      console.log("Storing order info:", { orderNumber, paypalToken });
+
+      sessionStorage.setItem("pendingOrderNumber", orderNumber);
+      sessionStorage.setItem("paypalToken", paypalToken);
 
       // Find the PayPal approval URL
       const approvalUrl = data.paypal.links.find(
@@ -85,11 +98,19 @@ export default function CheckoutButton({
         throw new Error("PayPal approval URL not found");
       }
 
-      // Store order number in session storage for later use
-      sessionStorage.setItem("pendingOrderNumber", data.order.orderNumber);
+      // Construct the return URL with all necessary parameters
+      const returnUrl = new URL("/success", window.location.origin);
+      returnUrl.searchParams.set("orderNumber", orderNumber);
+      returnUrl.searchParams.set("token", paypalToken);
+
+      // Add return URL to PayPal URL
+      const finalUrl = new URL(approvalUrl);
+      finalUrl.searchParams.set("returnUrl", returnUrl.toString());
+
+      console.log("Redirecting to PayPal URL:", finalUrl.toString());
 
       // Redirect to PayPal
-      window.location.href = approvalUrl;
+      window.location.href = finalUrl.toString();
     } catch (error) {
       console.error("Checkout error:", error);
       toast.error("Failed to process checkout");

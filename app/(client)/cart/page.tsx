@@ -4,8 +4,7 @@ import Container from "@/components/Container";
 import EmptyCart from "@/components/EmptyCart";
 import Loader from "@/components/Loader";
 import NoAccessToCart from "@/components/NoAccessToCart";
-import { PayPalButton } from "@/components/PayPalButton";
-import PayPalProvider from "@/components/PayPalProvider";
+import CheckoutButton from "@/components/CheckoutButton";
 import PriceFormatter from "@/components/PriceFormatter";
 import QuantityButtons from "@/components/QuantityButtons";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,7 @@ import { useAuth } from "@clerk/nextjs";
 import { ShoppingBag, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState, useMemo } from "react";
 import toast from "react-hot-toast";
 import { Destination } from "@/types/address.types";
 
@@ -87,6 +86,25 @@ const CartPage = () => {
     postalCode: "K1A0B1", // Replace it with your origin postal code
     countryCode: "CA", // Country code for Canada
   };
+
+  const countryId = country === "CA" ? 2 : 1;
+  const countryName = country === "CA" ? "Canada" : "United States";
+
+  const provinceId = useMemo(() => {
+    if (!destination.state) return 0;
+    if (country === "CA") {
+      const province = provincesByCountry.find(
+        (p) => p.province_name === destination.state
+      );
+      return province?.id || 0;
+    }
+    const state = statesByCountry.find(
+      (s) => s.state_name === destination.state
+    );
+    return state?.id || 0;
+  }, [destination.state, country]);
+
+  const provinceName = destination.state || "";
 
   useEffect(() => {
     setIsClient(true);
@@ -269,54 +287,254 @@ const CartPage = () => {
   };
 
   return (
-    <PayPalProvider>
-      <div className="bg-gray-50 pb-10" suppressHydrationWarning={true}>
-        {isSignedIn ? (
-          <Container>
-            {groupedItems?.length ? (
-              <>
-                <div className="flex items-center gap-2 py-5">
-                  <ShoppingBag className="h-6 w-6 text-primary" />
-                  <h1 className="text-2xl font-semibold">Shopping Cart</h1>
-                </div>
-                <div className="flex flex-col-reverse gap-5  lg:grid lg:grid-cols-3  md:gap-8">
-                  {/* --------------------------- Step 1 --------------------------- */}
-                  {showShipping === 1 && (
-                    <div className="lg:col-span-1  ">
-                      <div className="w-full bg-white p-6 rounded-lg border">
-                        <h2 className="text-xl font-semibold mb-4">
-                          Order Summary
-                        </h2>
-                        <div className="space-y-4">
-                          <div className="flex justify-between">
-                            <span>SubTotal</span>
-                            <PriceFormatter amount={getSubTotalPrice()} />
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Discount</span>
-                            <PriceFormatter
-                              amount={getSubTotalPrice() - getTotalPrice()}
-                            />
-                          </div>
+    <div className="bg-gray-50 pb-10" suppressHydrationWarning={true}>
+      {isSignedIn ? (
+        <Container>
+          {groupedItems?.length ? (
+            <>
+              <div className="flex items-center gap-2 py-5">
+                <ShoppingBag className="h-6 w-6 text-primary" />
+                <h1 className="text-2xl font-semibold">Shopping Cart</h1>
+              </div>
+              <div className="flex flex-col-reverse gap-5  lg:grid lg:grid-cols-3  md:gap-8">
+                {/* --------------------------- Step 1 --------------------------- */}
+                {showShipping === 1 && (
+                  <div className="lg:col-span-1  ">
+                    <div className="w-full bg-white p-6 rounded-lg border">
+                      <h2 className="text-xl font-semibold mb-4">
+                        Order Summary
+                      </h2>
+                      <div className="space-y-4">
+                        <div className="flex justify-between">
+                          <span>SubTotal</span>
+                          <PriceFormatter amount={getSubTotalPrice()} />
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Discount</span>
+                          <PriceFormatter
+                            amount={getSubTotalPrice() - getTotalPrice()}
+                          />
+                        </div>
 
-                          <Separator />
-                          <div className="flex justify-between font-semibold text-lg">
-                            <span>Total</span>
+                        <Separator />
+                        <div className="flex justify-between font-semibold text-lg">
+                          <span>Total</span>
 
-                            <PriceFormatter
-                              amount={useCartStore?.getState().getTotalPrice()}
-                              className="text-lg font-bold text-black"
-                            />
-                          </div>
-                          <Button
-                            onClick={() => {
-                              setShowShipping(2);
+                          <PriceFormatter
+                            amount={useCartStore?.getState().getTotalPrice()}
+                            className="text-lg font-bold text-black"
+                          />
+                        </div>
+                        <Button
+                          onClick={() => {
+                            setShowShipping(2);
+                          }}
+                          disabled={loading}
+                          className="w-full"
+                          size="lg"
+                        >
+                          Next
+                        </Button>
+                        <Link
+                          href="/"
+                          className="block text-center text-sm text-primary hover:underline"
+                        >
+                          Continue Shopping
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* --------------------------- Step 2 --------------------------- */}
+                {showShipping === 2 && (
+                  <div className="lg:col-span-1">
+                    <div className=" w-full bg-white p-6 rounded-lg border">
+                      <h2 className="text-xl font-semibold mb-4">
+                        Shipping Details
+                      </h2>
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleSubmit();
+                        }}
+                        className="space-y-2"
+                      >
+                        <AutoCompleteAddressInput
+                          destination={destination}
+                          handleAddressManualChange={handleAddressManualChange}
+                          setDestination={setDestination}
+                        />
+
+                        {/* City field */}
+                        <div>
+                          {destination.city && !destination.cityId ? (
+                            // If we have a city from autocomplete but no matching cityId, show a disabled input
+                            <div className="flex flex-col gap-2">
+                              <label htmlFor="city">City</label>
+                              <input
+                                type="text"
+                                id="city"
+                                value={destination.city}
+                                disabled
+                                className="p-2 border rounded-md bg-gray-100"
+                              />
+                              <p className="text-xs text-gray-500">
+                                City selected from address autocomplete
+                              </p>
+                            </div>
+                          ) : (
+                            // Otherwise show the regular city dropdown
+                            <div className="flex flex-col gap-2">
+                              <label htmlFor="city">City</label>
+                              <Select
+                                value={destination.cityId?.toString()}
+                                onValueChange={(value) => {
+                                  const selectedCity = cities.find(
+                                    (city) => city.id.toString() === value
+                                  );
+                                  if (selectedCity) {
+                                    setDestination({
+                                      ...destination,
+                                      cityId: selectedCity.id,
+                                      city: selectedCity.city_name,
+                                    });
+                                  }
+                                }}
+                                disabled={
+                                  !destination.state || cities.length === 0
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a city" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {cities.map((city) => (
+                                    <SelectItem
+                                      key={city.id}
+                                      value={city.id.toString()}
+                                    >
+                                      {city.city_name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <p className="text-sm">
+                            {country === "CA" ? "Province" : "State"}
+                          </p>
+                          <Select
+                            value={destination.state}
+                            onValueChange={(value) => {
+                              setDestination((prev) => ({
+                                ...prev,
+                                state: value,
+                                city: "",
+                              }));
+
+                              // Fetch cities for the selected state/province
+                              const isCanada = country === "CA";
+                              const filteredCities = citiesByState.filter(
+                                (city) => {
+                                  if (isCanada) {
+                                    return (
+                                      city.province?.province_name === value &&
+                                      city.country?.id === 2
+                                    );
+                                  } else {
+                                    return (
+                                      city.state?.state_name === value &&
+                                      city.country?.id === 1
+                                    );
+                                  }
+                                }
+                              );
+
+                              setCities(filteredCities);
                             }}
-                            disabled={loading}
-                            className="w-full"
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue
+                                placeholder={`Select ${
+                                  country === "CA" ? "Province" : "State"
+                                }`}
+                              />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {country === "CA"
+                                ? provincesByCountry.map((province) => (
+                                    <SelectItem
+                                      key={province.id}
+                                      value={province.province_name}
+                                    >
+                                      {province.province_name}
+                                    </SelectItem>
+                                  ))
+                                : statesByCountry
+                                    .filter((state) => state.country_id === 1)
+                                    .map((state) => (
+                                      <SelectItem
+                                        key={state.id}
+                                        value={state.state_name}
+                                      >
+                                        {state.state_name}
+                                      </SelectItem>
+                                    ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <p className="text-sm">Zip / Postal Code</p>
+                          <input
+                            value={destination.postalCode}
+                            name={"postalCode"}
+                            onChange={(e) => handleAddressManualChange(e)}
+                            type="text"
+                            required
+                            className=" border rounded-md px-3 w-full py-2"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-sm">Country</p>
+                          <div className=" border rounded-md px-3 w-full py-2">
+                            {country === "CA" ? "Canada" : "United States"}
+                          </div>
+                        </div>
+
+                        {/*<Map onAddressSelect={undefined}/>*/}
+
+                        <Separator />
+
+                        {error && (
+                          <div
+                            className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
+                            role="alert"
+                          >
+                            <strong className="font-bold">Error: </strong>
+                            <span className="block sm:inline">{error}</span>
+                          </div>
+                        )}
+
+                        <Button
+                          type="submit"
+                          disabled={loading}
+                          className="w-full"
+                          size="lg"
+                        >
+                          {loading ? "Processing..." : "Next"}
+                        </Button>
+                        <div className="flex items-center justify-between">
+                          <Button
+                            onClick={() => setShowShipping(1)}
+                            type="button"
+                            variant="destructive"
                             size="lg"
                           >
-                            Next
+                            Back
                           </Button>
                           <Link
                             href="/"
@@ -325,374 +543,172 @@ const CartPage = () => {
                             Continue Shopping
                           </Link>
                         </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* --------------------------- Step 2 --------------------------- */}
-                  {showShipping === 2 && (
-                    <div className="lg:col-span-1">
-                      <div className=" w-full bg-white p-6 rounded-lg border">
-                        <h2 className="text-xl font-semibold mb-4">
-                          Shipping Details
-                        </h2>
-                        <form
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            handleSubmit();
-                          }}
-                          className="space-y-2"
-                        >
-                          <AutoCompleteAddressInput
-                            destination={destination}
-                            handleAddressManualChange={
-                              handleAddressManualChange
-                            }
-                            setDestination={setDestination}
-                          />
-
-                          {/* City field */}
-                          <div>
-                            {destination.city && !destination.cityId ? (
-                              // If we have a city from autocomplete but no matching cityId, show a disabled input
-                              <div className="flex flex-col gap-2">
-                                <label htmlFor="city">City</label>
-                                <input
-                                  type="text"
-                                  id="city"
-                                  value={destination.city}
-                                  disabled
-                                  className="p-2 border rounded-md bg-gray-100"
-                                />
-                                <p className="text-xs text-gray-500">
-                                  City selected from address autocomplete
-                                </p>
-                              </div>
-                            ) : (
-                              // Otherwise show the regular city dropdown
-                              <div className="flex flex-col gap-2">
-                                <label htmlFor="city">City</label>
-                                <Select
-                                  value={destination.cityId?.toString()}
-                                  onValueChange={(value) => {
-                                    const selectedCity = cities.find(
-                                      (city) => city.id.toString() === value
-                                    );
-                                    if (selectedCity) {
-                                      setDestination({
-                                        ...destination,
-                                        cityId: selectedCity.id,
-                                        city: selectedCity.city_name,
-                                      });
-                                    }
-                                  }}
-                                  disabled={
-                                    !destination.state || cities.length === 0
-                                  }
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select a city" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {cities.map((city) => (
-                                      <SelectItem
-                                        key={city.id}
-                                        value={city.id.toString()}
-                                      >
-                                        {city.city_name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            )}
-                          </div>
-
-                          <div>
-                            <p className="text-sm">
-                              {country === "CA" ? "Province" : "State"}
-                            </p>
-                            <Select
-                              value={destination.state}
-                              onValueChange={(value) => {
-                                setDestination((prev) => ({
-                                  ...prev,
-                                  state: value,
-                                  city: "",
-                                }));
-
-                                // Fetch cities for the selected state/province
-                                const isCanada = country === "CA";
-                                const filteredCities = citiesByState.filter(
-                                  (city) => {
-                                    if (isCanada) {
-                                      return (
-                                        city.province?.province_name ===
-                                          value && city.country?.id === 2
-                                      );
-                                    } else {
-                                      return (
-                                        city.state?.state_name === value &&
-                                        city.country?.id === 1
-                                      );
-                                    }
-                                  }
-                                );
-
-                                setCities(filteredCities);
-                              }}
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue
-                                  placeholder={`Select ${
-                                    country === "CA" ? "Province" : "State"
-                                  }`}
-                                />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {country === "CA"
-                                  ? provincesByCountry.map((province) => (
-                                      <SelectItem
-                                        key={province.id}
-                                        value={province.province_name}
-                                      >
-                                        {province.province_name}
-                                      </SelectItem>
-                                    ))
-                                  : statesByCountry
-                                      .filter((state) => state.country_id === 1)
-                                      .map((state) => (
-                                        <SelectItem
-                                          key={state.id}
-                                          value={state.state_name}
-                                        >
-                                          {state.state_name}
-                                        </SelectItem>
-                                      ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <p className="text-sm">Zip / Postal Code</p>
-                            <input
-                              value={destination.postalCode}
-                              name={"postalCode"}
-                              onChange={(e) => handleAddressManualChange(e)}
-                              type="text"
-                              required
-                              className=" border rounded-md px-3 w-full py-2"
-                            />
-                          </div>
-                          <div>
-                            <p className="text-sm">Country</p>
-                            <div className=" border rounded-md px-3 w-full py-2">
-                              {country === "CA" ? "Canada" : "United States"}
-                            </div>
-                          </div>
-
-                          {/*<Map onAddressSelect={undefined}/>*/}
-
-                          <Separator />
-
-                          {error && (
-                            <div
-                              className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
-                              role="alert"
-                            >
-                              <strong className="font-bold">Error: </strong>
-                              <span className="block sm:inline">{error}</span>
-                            </div>
-                          )}
-
-                          <Button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full"
-                            size="lg"
-                          >
-                            {loading ? "Processing..." : "Next"}
-                          </Button>
-                          <div className="flex items-center justify-between">
-                            <Button
-                              onClick={() => setShowShipping(1)}
-                              type="button"
-                              variant="destructive"
-                              size="lg"
-                            >
-                              Back
-                            </Button>
-                            <Link
-                              href="/"
-                              className="block text-center text-sm text-primary hover:underline"
-                            >
-                              Continue Shopping
-                            </Link>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* --------------------------- Step 3 --------------------------- */}
-                  {showShipping === 3 && (
-                    <div className="lg:col-span-1">
-                      <div className=" w-full bg-white p-6 rounded-lg border">
-                        <h2 className="text-xl font-semibold mb-4">
-                          Shipping Options
-                        </h2>
-                        <form className="space-y-2">
-                          <div>
-                            <p className="text-sm pb-1">Parcel Type</p>
-                            <select
-                              className=" border rounded-md px-3 w-full py-2"
-                              name=""
-                              id=""
-                              onChange={(e) => {
-                                setSelectedShippingCharge(
-                                  parseFloat(e.target.value)
-                                );
-                                setSelectedService(
-                                  parseFloat(e.target.value) +
-                                    useCartStore?.getState().getTotalPrice()
-                                );
-                              }}
-                            >
-                              {shippingCostList?.map(
-                                (item: ShippingOption, ind: number) => (
-                                  <option key={ind} value={item?.price}>
-                                    {item?.service} -{" "}
-                                    <PriceFormatter
-                                      amount={
-                                        item?.price
-                                        // useCartStore?.getState().getTotalPrice()
-                                      }
-                                      className="text-lg font-bold text-black"
-                                    />
-                                  </option>
-                                )
-                              )}
-                            </select>
-                          </div>
-
-                          <Separator />
-                          <div className="flex justify-between font-semibold text-lg">
-                            <span>Total</span>
-
-                            <PriceFormatter
-                              amount={selectedService}
-                              className="text-lg font-bold text-black"
-                            />
-                          </div>
-
-                          {/*<Button*/}
-                          {/*    type="submit"*/}
-                          {/*    onClick={() => handleCheckout()}*/}
-                          {/*    disabled={loading}*/}
-                          {/*>*/}
-                          {/*    {loading*/}
-                          {/*        ? "Processing checkout..."*/}
-                          {/*        : "Proceed to checkout"}*/}
-                          {/*</Button>*/}
-
-                          <PayPalButton amount={String(selectedService)} />
-
-                          <div className="flex items-center justify-between">
-                            <Button
-                              onClick={() => setShowShipping(2)}
-                              type="button"
-                              variant="destructive"
-                              size="lg"
-                            >
-                              Back
-                            </Button>
-                            <Link
-                              href="/"
-                              className="block text-center text-sm text-primary hover:underline"
-                            >
-                              Continue Shopping
-                            </Link>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                  )}
-                  {/* Product View start */}
-                  <div className="lg:col-span-2 rounded-lg relative">
-                    {showShipping === 3 && (
-                      <div className=" absolute top-0 left-0 w-full h-full z-20 bg-white bg-opacity-50"></div>
-                    )}
-                    <div className="grid grid-cols-5 md:grid-cols-6 border rounded-tr-lg rounded-tl-lg bg-white p-2.5 text-base font-semibold">
-                      <h2 className="col-span-2 md:col-span-3">Product</h2>
-                      <h2>Price</h2>
-                      <h2>Quantity</h2>
-                      <h2>Total</h2>
-                    </div>
-                    <div className="border bg-white border-t-0 rounded-br-lg rounded-bl-lg">
-                      {groupedItems?.map(({ product }) => {
-                        const itemCount = getItemCount(product?.id);
-                        return (
-                          <div
-                            key={product?.id}
-                            className="grid grid-cols-5 md:grid-cols-6 border-b p-2.5 last:border-b-0"
-                          >
-                            <div className="col-span-2 md:col-span-3 flex items-center">
-                              <Trash2
-                                onClick={() => handleDeleteProduct(product?.id)}
-                                className="w-4 h-4 md:w-5 md:h-5 mr-1 text-gray-500 hover:text-red-600 hoverEffect"
-                              />
-                              {product?.images[0] && (
-                                <div className="border p-0.5 md:p-1 mr-2 rounded-md overflow-hidden group">
-                                  <Image
-                                    src={product.images[0]}
-                                    alt="productImage"
-                                    width={300}
-                                    height={300}
-                                    loading="lazy"
-                                    className="w-10 h-10 md:w-full md:h-14 object-cover group-hover:scale-105 overflow-hidden transition-transform duration-500"
-                                  />
-                                </div>
-                              )}
-                              <h2 className="text-sm">{product?.name}</h2>
-                            </div>
-                            <div className="flex items-center">
-                              <PriceFormatter amount={product?.price} />
-                            </div>
-                            <QuantityButtons
-                              product={product}
-                              className="text-sm gap-0 md:gap-1"
-                            />
-                            <div className="flex items-center">
-                              <PriceFormatter
-                                amount={
-                                  product?.price ? product.price * itemCount : 0
-                                }
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
-                      <Button
-                        onClick={handleResetCart}
-                        className="m-5 font-semibold"
-                        variant="destructive"
-                      >
-                        Reset Cart
-                      </Button>
+                      </form>
                     </div>
                   </div>
+                )}
 
-                  {/* Product View end */}
+                {/* --------------------------- Step 3 --------------------------- */}
+                {showShipping === 3 && (
+                  <div className="lg:col-span-1">
+                    <div className=" w-full bg-white p-6 rounded-lg border">
+                      <h2 className="text-xl font-semibold mb-4">
+                        Shipping Options
+                      </h2>
+                      <form className="space-y-2">
+                        <div>
+                          <p className="text-sm pb-1">Parcel Type</p>
+                          <select
+                            className=" border rounded-md px-3 w-full py-2"
+                            name=""
+                            id=""
+                            onChange={(e) => {
+                              setSelectedShippingCharge(
+                                parseFloat(e.target.value)
+                              );
+                              setSelectedService(
+                                parseFloat(e.target.value) +
+                                  useCartStore?.getState().getTotalPrice()
+                              );
+                            }}
+                          >
+                            {shippingCostList?.map(
+                              (item: ShippingOption, ind: number) => (
+                                <option key={ind} value={item?.price}>
+                                  {item?.service} -{" "}
+                                  <PriceFormatter
+                                    amount={
+                                      item?.price
+                                      // useCartStore?.getState().getTotalPrice()
+                                    }
+                                    className="text-lg font-bold text-black"
+                                  />
+                                </option>
+                              )
+                            )}
+                          </select>
+                        </div>
+
+                        <Separator />
+                        <div className="flex justify-between font-semibold text-lg">
+                          <span>Total</span>
+
+                          <PriceFormatter
+                            amount={selectedService}
+                            className="text-lg font-bold text-black"
+                          />
+                        </div>
+
+                        <CheckoutButton
+                          shippingData={{
+                            street: destination.address,
+                            city: destination.city,
+                            provinceId,
+                            provinceName,
+                            postalCode: destination.postalCode,
+                            countryId,
+                            countryName,
+                          }}
+                          totalAmount={selectedService || 0}
+                          currency={country === "CA" ? "CAD" : "USD"}
+                        />
+
+                        <div className="flex items-center justify-between">
+                          <Button
+                            onClick={() => setShowShipping(2)}
+                            type="button"
+                            variant="destructive"
+                            size="lg"
+                          >
+                            Back
+                          </Button>
+                          <Link
+                            href="/"
+                            className="block text-center text-sm text-primary hover:underline"
+                          >
+                            Continue Shopping
+                          </Link>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
+                {/* Product View start */}
+                <div className="lg:col-span-2 rounded-lg relative">
+                  {showShipping === 3 && (
+                    <div className=" absolute top-0 left-0 w-full h-full z-20 bg-white bg-opacity-50"></div>
+                  )}
+                  <div className="grid grid-cols-5 md:grid-cols-6 border rounded-tr-lg rounded-tl-lg bg-white p-2.5 text-base font-semibold">
+                    <h2 className="col-span-2 md:col-span-3">Product</h2>
+                    <h2>Price</h2>
+                    <h2>Quantity</h2>
+                    <h2>Total</h2>
+                  </div>
+                  <div className="border bg-white border-t-0 rounded-br-lg rounded-bl-lg">
+                    {groupedItems?.map(({ product }) => {
+                      const itemCount = getItemCount(product?.id);
+                      return (
+                        <div
+                          key={product?.id}
+                          className="grid grid-cols-5 md:grid-cols-6 border-b p-2.5 last:border-b-0"
+                        >
+                          <div className="col-span-2 md:col-span-3 flex items-center">
+                            <Trash2
+                              onClick={() => handleDeleteProduct(product?.id)}
+                              className="w-4 h-4 md:w-5 md:h-5 mr-1 text-gray-500 hover:text-red-600 hoverEffect"
+                            />
+                            {product?.images[0] && (
+                              <div className="border p-0.5 md:p-1 mr-2 rounded-md overflow-hidden group">
+                                <Image
+                                  src={product.images[0]}
+                                  alt="productImage"
+                                  width={300}
+                                  height={300}
+                                  loading="lazy"
+                                  className="w-10 h-10 md:w-full md:h-14 object-cover group-hover:scale-105 overflow-hidden transition-transform duration-500"
+                                />
+                              </div>
+                            )}
+                            <h2 className="text-sm">{product?.name}</h2>
+                          </div>
+                          <div className="flex items-center">
+                            <PriceFormatter amount={product?.price} />
+                          </div>
+                          <QuantityButtons
+                            product={product}
+                            className="text-sm gap-0 md:gap-1"
+                          />
+                          <div className="flex items-center">
+                            <PriceFormatter
+                              amount={
+                                product?.price ? product.price * itemCount : 0
+                              }
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <Button
+                      onClick={handleResetCart}
+                      className="m-5 font-semibold"
+                      variant="destructive"
+                    >
+                      Reset Cart
+                    </Button>
+                  </div>
                 </div>
-              </>
-            ) : (
-              <EmptyCart />
-            )}
-          </Container>
-        ) : (
-          <NoAccessToCart />
-        )}
-      </div>
-    </PayPalProvider>
+
+                {/* Product View end */}
+              </div>
+            </>
+          ) : (
+            <EmptyCart />
+          )}
+        </Container>
+      ) : (
+        <NoAccessToCart />
+      )}
+    </div>
   );
 };
 

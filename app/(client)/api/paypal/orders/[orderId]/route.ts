@@ -51,7 +51,7 @@ export async function POST(
     const response = await paypalClient().execute(captureRequest);
     const result = response.result;
 
-    console.log("result", result);
+    console.log("result when creating the order", result);
 
     const purchaseUnits = result.purchase_units;
 
@@ -184,6 +184,8 @@ export async function POST(
       );
 
       const orderResult = await orderResponse.json();
+
+      console.log(orderResult);
 
       if (!orderResponse.ok) {
         console.error("Failed to create order:", orderResult);

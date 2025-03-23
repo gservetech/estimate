@@ -29,6 +29,8 @@ type OrderProduct = Array<{
 }>;
 
 const OrdersPage = async () => {
+  console.log("OrdersPage - Starting to fetch orders");
+
   const {
     user,
     orders: unsortedOrders,
@@ -39,7 +41,14 @@ const OrdersPage = async () => {
     error: string | null;
   } = await getUserOrders();
 
+  console.log("OrdersPage - Results:", {
+    hasUser: !!user,
+    ordersCount: unsortedOrders?.length,
+    error,
+  });
+
   if (!user) {
+    console.log("OrdersPage - No user found, redirecting");
     return redirect("/");
   }
 
@@ -50,8 +59,11 @@ const OrdersPage = async () => {
     return dateB - dateA;
   });
 
+  console.log("OrdersPage - Sorted orders:", orders);
+
   // Handle API errors (like connection issues)
   if (error) {
+    console.error("OrdersPage - Error:", error);
     return (
       <div className="flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <FileX className="h-24 w-24 text-red-400 mb-4" />
@@ -67,6 +79,8 @@ const OrdersPage = async () => {
       </div>
     );
   }
+
+  console.log(orders);
 
   // If no orders, show a simple fallback component
   if (!orders || orders.length === 0) {

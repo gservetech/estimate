@@ -15,6 +15,8 @@ export async function getUserOrders(): Promise<GetUserOrdersResponse> {
     const clerkUser = await currentUser();
     const { userId } = await auth();
 
+    console.log("userId", userId);
+
     let orders: Order[] = [];
     if (userId) {
       try {
@@ -24,7 +26,6 @@ export async function getUserOrders(): Promise<GetUserOrdersResponse> {
         );
 
         if (response.status === 404) {
-          // No orders found, return empty array
           console.log("No orders found for user:", userId);
         } else if (!response.ok) {
           throw new Error("Failed to fetch orders");

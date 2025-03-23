@@ -1,0 +1,12 @@
+orderDataa {
+  clerkId: 'user_2tLehfAeJc93HCKaprKXO6GnNOF',
+  totalPrice: '26.24',
+  currencyCode: 'CAD',
+  amountDiscount: 0,
+  orderStatusId: 3,
+  orderDate: '2025-03-22T18:06:38',
+  trackingNumber: 'BSGXANm8kitgi8',
+  deliveryDate: '2025-03-25T18:06:38',
+  shippingAddressId: 68,
+  products: [ { productId: 24, quantity: 1, unitPrice: 22.99 } ]
+}

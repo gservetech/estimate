@@ -1,9 +1,9 @@
 "use client";
 
-import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Product } from "@/types/product.types";
 import { useState } from "react";
+import OtherBrandProductCard from "./OtherBrandProductCard";
 
 interface OtherBrandsProductsProps {
   productsNotOurs?: Product[];
@@ -30,7 +30,11 @@ const OtherBrandsProducts = ({
       {/* Product Grid for Other Brands */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {productsNotOurs.slice(0, visibleCount).map((item, index) => (
-          <ProductCard key={`other-${index}`} product={item} own={false} />
+          <OtherBrandProductCard
+            key={`other-${index}`}
+            product={item}
+            own={false}
+          />
         ))}
       </div>
 

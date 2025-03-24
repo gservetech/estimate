@@ -1,3 +1,5 @@
+"use client";
+
 import useLocationStore from "@/store/locationStore";
 import { twMerge } from "tailwind-merge";
 

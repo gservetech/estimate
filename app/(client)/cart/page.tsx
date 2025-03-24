@@ -4,7 +4,7 @@ import Container from "@/components/Container";
 import EmptyCart from "@/components/EmptyCart";
 import Loader from "@/components/Loader";
 import NoAccessToCart from "@/components/NoAccessToCart";
-import CheckoutButton from "@/components/CheckoutButton";
+// import CheckoutButton from "@/components/CheckoutButton";
 import PriceFormatter from "@/components/PriceFormatter";
 import QuantityButtons from "@/components/QuantityButtons";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,8 @@ import Link from "next/link";
 import { ChangeEvent, useEffect, useState, useMemo } from "react";
 import toast from "react-hot-toast";
 import { Destination } from "@/types/address.types";
+import SquareProvider from "@/components/SquareProvider";
+import { Suspense } from "react";
 
 interface CartProducts {
   weight: number;
@@ -551,15 +553,15 @@ const CartPage = () => {
                 {/* --------------------------- Step 3 --------------------------- */}
                 {showShipping === 3 && (
                   <div className="lg:col-span-1">
-                    <div className=" w-full bg-white p-6 rounded-lg border">
+                    <div className="w-full bg-white p-6 rounded-lg border">
                       <h2 className="text-xl font-semibold mb-4">
                         Shipping Options
                       </h2>
-                      <form className="space-y-2">
+                      <form className="space-y-4">
                         <div>
                           <p className="text-sm pb-1">Parcel Type</p>
                           <select
-                            className=" border rounded-md px-3 w-full py-2"
+                            className="border rounded-md px-3 w-full py-2"
                             name=""
                             id=""
                             onChange={(e) => {
@@ -577,10 +579,7 @@ const CartPage = () => {
                                 <option key={ind} value={item?.price}>
                                   {item?.service} -{" "}
                                   <PriceFormatter
-                                    amount={
-                                      item?.price
-                                      // useCartStore?.getState().getTotalPrice()
-                                    }
+                                    amount={item?.price}
                                     className="text-lg font-bold text-black"
                                   />
                                 </option>
@@ -599,7 +598,7 @@ const CartPage = () => {
                           />
                         </div>
 
-                        <CheckoutButton
+                        {/* <CheckoutButton
                           shippingData={{
                             street: destination.address,
                             city: destination.city,
@@ -611,9 +610,78 @@ const CartPage = () => {
                           }}
                           totalAmount={selectedService || 0}
                           currency={country === "CA" ? "CAD" : "USD"}
-                        />
+                        /> */}
 
-                        <div className="flex items-center justify-between">
+                        {/* Payment Section - Direct integration */}
+                        <div className="mt-8">
+                          <Separator className="mb-6" />
+                          <div className="flex items-center mb-4">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5 mr-2 text-gray-600"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            <h3 className="text-lg font-semibold">
+                              Pay with Credit Card
+                            </h3>
+                          </div>
+                          <div className="bg-gray-50 p-5 rounded-lg border border-gray-100">
+                            <Suspense
+                              fallback={
+                                <div className="min-h-[200px] flex items-center justify-center">
+                                  <div className="flex flex-col items-center">
+                                    <svg
+                                      className="animate-spin h-8 w-8 text-blue-500 mb-2"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                      ></circle>
+                                      <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                      ></path>
+                                    </svg>
+                                    <p className="text-gray-600">
+                                      Loading payment form...
+                                    </p>
+                                  </div>
+                                </div>
+                              }
+                            >
+                              <SquareProvider
+                                amount={selectedService || 0}
+                                shippingData={{
+                                  street: destination.address,
+                                  city: destination.city,
+                                  provinceId: provinceId?.toString() || null,
+                                  provinceName,
+                                  postalCode: destination.postalCode,
+                                  countryId: countryId?.toString() || null,
+                                  countryName,
+                                }}
+                                currency={country === "CA" ? "CAD" : "USD"}
+                              />
+                            </Suspense>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between mt-6">
                           <Button
                             onClick={() => setShowShipping(2)}
                             type="button"
@@ -633,10 +701,11 @@ const CartPage = () => {
                     </div>
                   </div>
                 )}
+
                 {/* Product View start */}
                 <div className="lg:col-span-2 rounded-lg relative">
                   {showShipping === 3 && (
-                    <div className=" absolute top-0 left-0 w-full h-full z-20 bg-white bg-opacity-50"></div>
+                    <div className="absolute top-0 left-0 w-full h-full z-20 bg-white bg-opacity-50"></div>
                   )}
                   <div className="grid grid-cols-5 md:grid-cols-6 border rounded-tr-lg rounded-tl-lg bg-white p-2.5 text-base font-semibold">
                     <h2 className="col-span-2 md:col-span-3">Product</h2>

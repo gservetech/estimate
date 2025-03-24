@@ -1,165 +1,125 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import useCartStore from "@/store";
-import toast from "react-hot-toast";
+import useOrderStore from "@/store/orderStore";
+import { Check, Home, Package, ShoppingBag } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { useAuth } from "@clerk/nextjs";
+import { getClientOrders } from "@/lib/getClientOrders";
 
-export default function SuccessPage() {
-  const [loading, setLoading] = useState(true);
-  const [orderDetails, setOrderDetails] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+const SuccessPage = () => {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const { resetCart } = useCartStore();
+  const orderNumber = searchParams.get("orderNumber");
+  const clearCart = useCartStore((state) => state.resetCart);
+  const { userId } = useAuth();
+  const { setOrders } = useOrderStore();
 
   useEffect(() => {
-    const orderNumber = searchParams.get("orderNumber");
-    const token = searchParams.get("token");
-
-    console.log("Success page params:", { orderNumber, token });
-
-    if (!orderNumber || !token) {
-      console.error("Missing parameters:", { orderNumber, token });
-      setError("Invalid payment information");
-      setLoading(false);
-      return;
+    if (orderNumber) {
+      clearCart();
     }
 
-    const capturePayment = async () => {
-      try {
-        console.log("Attempting to capture payment for order:", orderNumber);
+    // Fetch latest orders to update the orderStore when success page loads
+    const updateOrders = async () => {
+      if (userId) {
+        try {
+          const { orders, error } = await getClientOrders(userId);
+          if (!error && orders) {
+            // Update orders in store to refresh header count
+            setOrders(orders);
+            console.log("Updated orders in store, count:", orders.length);
 
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/${orderNumber}/capture`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              token,
-              orderNumber,
-            }),
+            // Dispatch a custom event to notify the header component
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new Event("order-updated"));
+              console.log("Success page: Dispatched order-updated event");
+            }
+          } else if (error) {
+            console.error("Error fetching orders on success page:", error);
           }
-        );
-
-        const data = await response.json();
-        console.log("Capture response:", data);
-
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to capture payment");
+        } catch (error) {
+          console.error("Error fetching latest orders:", error);
         }
-
-        // Clear cart and storage after successful capture
-        resetCart();
-        sessionStorage.removeItem("pendingOrderNumber");
-        sessionStorage.removeItem("paypalToken");
-
-        // Set order details for display
-        setOrderDetails(data);
-        toast.success("Payment completed successfully");
-      } catch (error) {
-        console.error("Payment capture error:", error);
-        setError("Failed to complete payment");
-        setTimeout(() => router.push("/cart"), 3000);
-      } finally {
-        setLoading(false);
       }
     };
 
-    capturePayment();
-  }, [searchParams, router, resetCart]);
+    updateOrders();
+  }, [orderNumber, clearCart, userId, setOrders]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold mb-4">
-            Completing your payment...
-          </h1>
-          <p>
-            Please don&apos;t close this window while we process your payment.
+  return (
+    <div className="py-10 md:py-20 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-white rounded-2xl shadow-2xl px-8 py-12 max-w-xl w-full text-center"
+      >
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+          className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg"
+        >
+          <Check className="text-teal-600 w-12 h-12" />
+        </motion.div>
+
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">
+          Order Confirmed!
+        </h1>
+        <div className="space-y-4 mb-8 text-left">
+          <p className="text-gray-600">
+            Thank you for your purchase. We&rsquo;re processing your order and
+            will ship it soon. A confirmation email with your order details will
+            be sent to your inbox shortly.
           </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold mb-4 text-red-600">
-            Payment Error
-          </h1>
-          <p>{error}</p>
-          <p className="mt-4">Redirecting to cart...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (orderDetails) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="max-w-md w-full mx-4 bg-white p-8 rounded-lg shadow-lg">
-          <div className="text-center">
-            <div className="mb-4">
-              <svg
-                className="w-16 h-16 text-green-500 mx-auto"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 13l4 4L19 7"
-                ></path>
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">
-              Order Successful!
-            </h1>
-            <p className="text-gray-600 mb-6">
-              Thank you for your purchase. Your order has been confirmed.
+          {orderNumber && (
+            <p className="text-gray-600">
+              Order Number:{" "}
+              <span className="text-black font-semibold">{orderNumber}</span>
             </p>
-            <div className="text-left bg-gray-50 p-4 rounded-lg mb-6">
-              <p className="mb-2">
-                <span className="font-semibold">Order Number:</span>{" "}
-                {orderDetails.orderNumber}
-              </p>
-              {orderDetails.amount && (
-                <p className="mb-2">
-                  <span className="font-semibold">Amount Paid:</span> $
-                  {orderDetails.amount}
-                </p>
-              )}
-            </div>
-            <div className="flex gap-4">
-              <button
-                onClick={() =>
-                  router.push(`/orders/${orderDetails.orderNumber}`)
-                }
-                className="flex-1 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
-              >
-                View Order
-              </button>
-              <button
-                onClick={() => router.push("/")}
-                className="flex-1 bg-gray-200 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors"
-              >
-                Continue Shopping
-              </button>
-            </div>
-          </div>
+          )}
         </div>
-      </div>
-    );
-  }
 
-  return null;
-}
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
+          <h2 className="font-semibold text-green-800 mb-2">
+            What&rsquo;s Next?
+          </h2>
+          <ul className="text-green-700 text-sm space-y-1">
+            <li>Check your email for order confirmation</li>
+            <li>We&rsquo;ll notify you when your order ships</li>
+            <li>Track your order status anytime</li>
+          </ul>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Link
+            href="/"
+            className="flex items-center justify-center px-4 py-3 font-semibold bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-300 shadow-md"
+          >
+            <Home className="w-5 h-5 mr-2" />
+            Home
+          </Link>
+          <Link
+            href="/orders"
+            className="flex items-center justify-center px-4 py-3 font-semibold bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-300 shadow-md"
+          >
+            <Package className="w-5 h-5 mr-2" />
+            Orders
+          </Link>
+          <Link
+            href="/"
+            className="flex items-center justify-center px-4 py-3 font-semibold bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-300 shadow-md"
+          >
+            <ShoppingBag className="w-5 h-5 mr-2" />
+            Shopping
+          </Link>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+export default SuccessPage;

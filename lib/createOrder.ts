@@ -1,45 +1,65 @@
-import { countries, provincesByCountry } from "@/data/states";
-
-// Helper function to get country ID from country code
-export function getCountryId(countryCode: string): {
-  id: number;
-  name: string;
-} {
-  const countryName = countryCode === "CA" ? "Canada" : "US";
-  const country = countries.find((c) => c.country_name === countryName);
-
-  return {
-    id: country?.id || 1, // Default to US (1) if not found
-    name: countryName, // Will be either "Canada" or "US"
+// Country and province mapping functions
+export function getCountryId(countryCode: string): { id: number; name: string } {
+  // Default to US if no country code provided
+  if (!countryCode) return { id: 1, name: "United States" };
+  
+  // Simple mapping of country codes to IDs and names
+  const countryMap: Record<string, { id: number; name: string }> = {
+    US: { id: 1, name: "United States" },
+    CA: { id: 2, name: "Canada" },
+    UK: { id: 3, name: "United Kingdom" },
+    AU: { id: 4, name: "Australia" },
+    // Add more countries as needed
   };
+  
+  return countryMap[countryCode] || { id: 1, name: "United States" };
 }
 
-// Helper function to get province ID from province code
 export function getProvinceId(
   provinceCode: string | null,
   countryId: number
 ): { id: number | null; name: string | null } {
-  if (!provinceCode || countryId !== 2) {
-    return { id: null, name: null }; // Return null for both if not Canada or no province code
+  if (!provinceCode) return { id: null, name: null };
+  
+  // US states
+  if (countryId === 1) {
+    const stateMap: Record<string, { id: number; name: string }> = {
+      AL: { id: 1, name: "Alabama" },
+      AK: { id: 2, name: "Alaska" },
+      AZ: { id: 3, name: "Arizona" },
+      // Add more states as needed
+    };
+    return stateMap[provinceCode] || { id: null, name: null };
   }
-
-  const province = provincesByCountry.find(
-    (p) => p.province_code === provinceCode && p.country_id === countryId
-  );
-
-  return {
-    id: province?.id || null,
-    name: province?.province_name || null,
-  };
+  
+  // Canadian provinces
+  if (countryId === 2) {
+    const provinceMap: Record<string, { id: number; name: string }> = {
+      ON: { id: 101, name: "Ontario" },
+      BC: { id: 102, name: "British Columbia" },
+      // Add more provinces as needed
+    };
+    return provinceMap[provinceCode] || { id: null, name: null };
+  }
+  
+  return { id: null, name: null };
 }
 
-interface OrderProduct {
+// Generate a unique tracking number for orders
+export function generateTrackingNumber(): string {
+  const timestamp = Date.now().toString().slice(-8);
+  const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  return `TRK-${timestamp}-${random}`;
+}
+
+// Add the types from your existing code
+export interface OrderProduct {
   productId: number;
   quantity: number;
   unitPrice: number;
 }
 
-interface CreateOrderRequest {
+export interface CreateOrderRequest {
   clerkId: string;
   totalPrice: number;
   currencyCode: string;
@@ -106,15 +126,4 @@ export async function createOrderRequest(orderData: CreateOrderRequest) {
       error: error instanceof Error ? error.message : "Failed to create order",
     };
   }
-}
-
-export function generateTrackingNumber(): string {
-  return `${Math.random()
-    .toString(36)
-    .substring(2, 8)
-    .toUpperCase()}${Date.now().toString(36).substring(-4)}`;
-}
-
-export function formatOrderDate(date: Date): string {
-  return date.toISOString().slice(0, 19);
 }

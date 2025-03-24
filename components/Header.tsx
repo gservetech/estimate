@@ -24,6 +24,13 @@ import CartIcon from "./CartIcon";
 import { getClientOrders } from "@/lib/getClientOrders";
 import useLocationStore from "@/store/locationStore";
 
+// Define the event interface for TypeScript
+declare global {
+  interface WindowEventMap {
+    "order-updated": Event;
+  }
+}
+
 interface HeaderProps {
   user: User | null;
   orders: Order[];
@@ -66,6 +73,26 @@ const Header: React.FC<HeaderProps> = ({ orders: initialOrders, user }) => {
       setOrderCount(initialOrders.length);
     }
   }, [initialOrders, setOrders, user?.clerkId, setUserId]);
+
+  // Effect to listen for order updates through a custom event
+  useEffect(() => {
+    if (isClient) {
+      // Define the event handler to update order count
+      const handleOrderUpdate = () => {
+        console.log("Order update event received, refreshing order count");
+        const currentOrders = useOrderStore.getState().orders;
+        setOrderCount(currentOrders.length);
+      };
+
+      // Add event listener for order updates
+      window.addEventListener("order-updated", handleOrderUpdate);
+
+      // Clean up
+      return () => {
+        window.removeEventListener("order-updated", handleOrderUpdate);
+      };
+    }
+  }, [isClient]);
 
   // Effect to update order count when store orders change
   useEffect(() => {

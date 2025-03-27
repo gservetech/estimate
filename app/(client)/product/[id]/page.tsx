@@ -1,41 +1,61 @@
 import AddToCartButton from "@/components/AddToCartButton";
 import Container from "@/components/Container";
 import PriceView from "@/components/PriceView";
-
+import ProductImageCard from "@/components/ProductImageCard";
+import { SingleProduct } from "@/types/product.types";
 import { notFound } from "next/navigation";
 import { FaRegQuestionCircle } from "react-icons/fa";
-import { FiShare2 } from "react-icons/fi";
+import { FiExternalLink, FiShare2 } from "react-icons/fi";
 import { LuStar } from "react-icons/lu";
 import { RxBorderSplit } from "react-icons/rx";
 import { TbTruckDelivery } from "react-icons/tb";
-import ProductImageCard from "@/components/ProductImageCard";
-import { Product } from "@/types/product.types";
-import productData from "@/data/products-data.json";
 
 const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
-  // Find product from local JSON data
-  const product = productData.find(
-    (item) => item.id === parseInt(id, 10)
-  ) as Product;
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/products/${id}`,
+        { next: { revalidate: 60 } }
+      );
 
-  // Comment out the original API fetch
-  // const fetchData = async () => {
-  //   const response = await fetch(
-  //     `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/pro/${id}`
-  //   );
-  //   if (!response.ok) throw new Error("Item not found");
-  //   return await response.json();
-  // };
+      if (!response.ok) {
+        throw new Error("Product not found");
+      }
 
-  // const product = (await fetchData().catch(() => {
-  //   return null;
-  // })) as Product;
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      return null;
+    }
+  };
+
+  const product = (await fetchData()) as SingleProduct;
 
   if (!product) {
     return notFound();
   }
+
+  const isOurProduct = product.affiliate_provider?.name === "GServeTech";
+
+  const renderActionButton = () => {
+    if (isOurProduct) {
+      return <AddToCartButton product={product} />;
+    }
+
+    return (
+      <a
+        href={product.product_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md transition-all duration-200"
+      >
+        Buy from {product.affiliate_provider?.name}
+        <FiExternalLink className="text-lg" />
+      </a>
+    );
+  };
 
   return (
     <div>
@@ -88,7 +108,17 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
             ))}
           </p>
-          <AddToCartButton product={product} />
+
+          {/* Render different button based on affiliate provider */}
+          {renderActionButton()}
+
+          {!isOurProduct && (
+            <p className="text-sm text-gray-500 italic text-center">
+              This product will be fulfilled by{" "}
+              {product.affiliate_provider?.name}
+            </p>
+          )}
+
           <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-b-gray-200 py-5 -mt-2">
             <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
               <RxBorderSplit className="text-lg" />

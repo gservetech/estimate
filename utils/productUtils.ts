@@ -6,7 +6,13 @@ export async function fetchProducts(): Promise<{
 }> {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/products`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/products`,
+      {
+        next: {
+          revalidate: 3600, // Cache for 1 hour
+          tags: ["products"], // Add a cache tag for manual revalidation
+        },
+      }
     );
     if (!response.ok) {
       throw new Error("Failed to fetch products");

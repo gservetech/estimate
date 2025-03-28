@@ -1,8 +1,5 @@
-import AddToCartButton from "@/components/AddToCartButton";
-import Container from "@/components/Container";
-import PriceView from "@/components/PriceView";
-import ProductImageCard from "@/components/ProductImageCard";
-import { SingleProduct } from "@/types/product.types";
+import React from "react";
+import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { FiExternalLink, FiShare2 } from "react-icons/fi";
@@ -10,31 +7,91 @@ import { LuStar } from "react-icons/lu";
 import { RxBorderSplit } from "react-icons/rx";
 import { TbTruckDelivery } from "react-icons/tb";
 
-const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const { id } = await params;
+import AddToCartButton from "@/components/AddToCartButton";
+import Container from "@/components/Container";
+import PriceView from "@/components/PriceView";
+import ProductImageCard from "@/components/ProductImageCard";
+import { SingleProduct } from "@/types/product.types";
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/products/${id}`,
-        { next: { revalidate: 60 } }
-      );
+// Define the correct type for async params
+interface Props {
+  params: Promise<{ id: string }>;
+}
 
-      if (!response.ok) {
-        throw new Error("Product not found");
-      }
+// --- Data Fetching Function ---
+async function getProduct(id: string): Promise<SingleProduct | null> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/products/${id}`,
+      { next: { revalidate: 60 } }
+    );
 
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching product:", error);
+    if (!response.ok) {
       return null;
     }
-  };
 
-  const product = (await fetchData()) as SingleProduct;
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    return null;
+  }
+}
+
+// --- Generate Metadata ---
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { id } = await params;
+  const product = await getProduct(id);
+
+  const siteBaseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://www.gservetech.com";
+  const defaultImageUrl = `${siteBaseUrl}/default-product-image.jpg`;
 
   if (!product) {
-    return notFound();
+    return {
+      title: "Product Not Found - GserveTech",
+      description: "The product you are looking for could not be found.",
+      openGraph: {
+        title: "Product Not Found - GserveTech",
+        description: "The product you are looking for could not be found.",
+        images: [defaultImageUrl],
+      },
+    };
+  }
+
+  const pageTitle = `${product.name} - GserveTech`;
+  const description = Array.isArray(product.description)
+    ? product.description.join(". ")
+    : product.description || "High-quality product available on GserveTech";
+
+  const imageUrl = product.images?.[0]?.startsWith("http")
+    ? product.images[0]
+    : `${siteBaseUrl}${product.images?.[0] || defaultImageUrl}`;
+
+  return {
+    title: pageTitle,
+    description: description,
+    openGraph: {
+      title: pageTitle,
+      description: description,
+      url: `${siteBaseUrl}/product/${id}`,
+      siteName: "GserveTech",
+      images: [{ url: imageUrl, alt: product.name }],
+      locale: "en_US",
+      type: "website",
+    },
+  };
+}
+
+// --- Product Page Component ---
+const ProductPage = async ({ params }: Props) => {
+  const { id } = await params;
+  const product = await getProduct(id);
+
+  if (!product) {
+    notFound();
   }
 
   const isOurProduct = product.affiliate_provider?.name === "GServeTech";
@@ -58,106 +115,49 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   };
 
   return (
-    <div>
-      <Container className="flex flex-col md:flex-row gap-10 py-10">
-        {product?.images && <ProductImageCard images={product.images} />}
-        <div className="w-full md:w-1/2 flex flex-col gap-5">
-          <div>
-            <p className="text-4xl font-bold mb-2">{product?.name}</p>
-            <div className="flex items-center gap-2">
-              <div className="text-lightText flex items-center gap-.5 text-sm">
-                {Array.from({ length: 5 }).map((_, index) => {
-                  const isLastStar = index === 4;
-                  return (
-                    <LuStar
-                      fill={!isLastStar ? "#fca99b" : "transparent"}
-                      key={index}
-                      className={`${
-                        isLastStar ? "text-gray-500" : "text-lightOrange"
-                      }`}
-                    />
-                  );
-                })}
-              </div>
-              <p className="text-sm font-medium text-gray-500">{`(25 reviews)`}</p>
-            </div>
-          </div>
-          <PriceView
-            price={product?.price}
-            discount={product?.discount}
-            label={product?.label}
-            className="text-lg font-bold"
-          />
-          {product?.stock && (
-            <p className="bg-green-100 w-24 text-center text-green-600 text-sm py-2.5 font-semibold rounded-lg">
-              In Stock
-            </p>
-          )}
+    <Container className="flex flex-col md:flex-row gap-10 py-10">
+      {/* Product Images */}
+      {product.images && product.images.length > 0 && (
+        <ProductImageCard images={product.images} />
+      )}
 
-          <p className="text-base text-gray-800">
-            <span className="bg-black text-white px-3 py-1 text-sm font-semibold rounded-md mr-2">
-              20
-            </span>{" "}
-            People are viewing this right now
+      {/* Product Details */}
+      <div className="w-full md:w-1/2 flex flex-col gap-5">
+        <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
+
+        <PriceView
+          price={product.price}
+          discount={product.discount}
+          label={product.label}
+          className="text-lg font-bold"
+        />
+
+        {product.stock && (
+          <p className="bg-green-100 w-24 text-center text-green-600 text-sm py-2.5 font-semibold rounded-lg">
+            In Stock
           </p>
+        )}
 
-          <p className="text-sm text-gray-600 tracking-wide">
-            {product?.description?.map((item, index) => (
-              <div key={index}>
-                <p>{item}</p>
-              </div>
-            ))}
-          </p>
-
-          {/* Render different button based on affiliate provider */}
-          {renderActionButton()}
-
-          {!isOurProduct && (
-            <p className="text-sm text-gray-500 italic text-center">
-              This product will be fulfilled by{" "}
-              {product.affiliate_provider?.name}
-            </p>
+        <div className="text-base text-gray-800 space-y-2">
+          {Array.isArray(product.description) ? (
+            product.description.map((item, index) => <p key={index}>{item}</p>)
+          ) : (
+            <p>{product.description}</p>
           )}
-
-          <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-b-gray-200 py-5 -mt-2">
-            <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
-              <RxBorderSplit className="text-lg" />
-              <p>Compare color</p>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
-              <FaRegQuestionCircle className="text-lg" />
-              <p>Ask a question</p>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
-              <TbTruckDelivery className="text-lg" />
-              <p>Delivery & Return</p>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
-              <FiShare2 className="text-lg" />
-              <p>Share</p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-5">
-            <div className="border border-darkBlue/20 text-center p-3 hover:border-darkBlue hoverEffect rounded-md">
-              <p className="text-base font-semibold text-black">
-                Free Shipping
-              </p>
-              <p className="text-sm text-gray-500">
-                Free shipping over order $120
-              </p>
-            </div>
-            <div className="border border-darkBlue/20 text-center p-3 hover:border-darkBlue hoverEffect rounded-md">
-              <p className="text-base font-semibold text-black">
-                Flexible Payment
-              </p>
-              <p className="text-sm text-gray-500">
-                Pay with Multiple Credit Cards
-              </p>
-            </div>
-          </div>
         </div>
-      </Container>
-    </div>
+
+        {renderActionButton()}
+
+        <div className="flex gap-4 mt-4">
+          <button className="flex items-center gap-2 text-blue-600 hover:underline">
+            <FiShare2 /> Share
+          </button>
+          <button className="flex items-center gap-2 text-gray-600">
+            <TbTruckDelivery /> Fast Delivery Available
+          </button>
+        </div>
+      </div>
+    </Container>
   );
 };
 

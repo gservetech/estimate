@@ -209,11 +209,7 @@ const Footer = () => {
                     </div>
                   </div>
                 </div>
-                <h6 className="flex align-items-start txt_footer lh-base mb-3">
-                  <b>Address:</b> 55 De Boers Drive, ON,
-                  <br />
-                  Canada
-                </h6>
+                
                 <h6 className="flex align-items-start txt_footer m-0">
                   <b>Email:</b>
                   <a
